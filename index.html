@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BC Cancer - Drug Order Assessment</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .step-section { border-bottom: 2px solid #ecf0f1; padding-bottom: 20px; margin-bottom: 20px; }
+        .step-title { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; color: #34495e; }
+        label { display: block; margin-bottom: 8px; cursor: pointer; }
+        input[type="text"], input[type="number"], input[type="date"] { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); }
+        .calculator-box { background: #e8f4f8; padding: 15px; border-radius: 6px; margin-top: 10px; }
+        button { background-color: #3498db; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; font-size: 1em; }
+        button:hover { background-color: #2980b9; }
+        .result { font-weight: bold; color: #c0392b; margin-top: 10px; font-size: 1.1em; }
+        .note { font-size: 0.9em; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Cancer Drug Order Assessment Screening</h1>
+    <p class="note">Based on the BC Cancer Clinical Pharmacy Guide</p>
+
+    <div class="step-section">
+        <div class="step-title">Step 1: Verify Patient Identity</div>
+        <label>Patient Name: <input type="text" placeholder="Enter full name"></label>
+        <label>ID Numbers (MRN/PHN): <input type="text" placeholder="Enter ID"></label>
+        <label>Date of Birth: <input type="date"></label>
+        <label><input type="checkbox"> Confirmed 2+ positive identifiers.</label>
+    </div>
+
+    <div class="step-section">
+        <div class="step-title">Steps 2-4: Clinical Checks & Timing</div>
+        <label><input type="checkbox"> Protocol matches clinical indication and eligibility criteria.</label>
+        <label><input type="checkbox"> Medications reviewed (no contraindicating drug interactions/CAMs).</label>
+        <label><input type="checkbox"> Checked for other therapies (e.g., concurrent radiation).</label>
+        <label><input type="checkbox"> Checked allergies (e.g., latex).</label>
+        <label><input type="checkbox"> Childbearing potential assessed and documented (ages 11-56).</label>
+        <label><input type="checkbox"> Verified duration of therapy and cycle interval.</label>
+    </div>
+
+    <div class="step-section">
+        <div class="step-title">Step 5: Determine Body Surface Area (BSA)</div>
+        <p class="note">Uses Mosteller Formula (Actual Body Weight)</p>
+        <div class="calculator-box">
+            <label>Height (cm): <input type="number" id="height" placeholder="e.g., 170"></label>
+            <label>Weight (kg): <input type="number" id="weight" placeholder="e.g., 70"></label>
+            <button onclick="calculateBSA()">Calculate BSA</button>
+            <div class="result" id="bsa-result">BSA: -- m²</div>
+        </div>
+    </div>
+
+    <div class="step-section">
+        <div class="step-title">Step 6: Check Dose Appropriateness</div>
+        <label><input type="checkbox"> Maximum cumulative doses checked (e.g., bleomycin/anthracyclines).</label>
+        <label><input type="checkbox"> Biosimilar drug selection verified (if applicable).</label>
+        
+        <div class="calculator-box">
+            <p style="margin-top:0;"><strong>Dose Variance Checker</strong></p>
+            <label>Prescribed Dose: <input type="number" id="prescribed-dose"></label>
+            <label>Calculated Ideal Dose: <input type="number" id="calculated-dose"></label>
+            <button onclick="calculateVariance()">Check Variance</button>
+            <div class="result" id="variance-result">Variance: -- %</div>
+            <p class="note">Max allowed variance is 5% (or 10% for select monoclonal antibodies).</p>
+        </div>
+    </div>
+
+    <div class="step-section">
+        <div class="step-title">Step 7: Review Laboratory Values</div>
+        <label><input type="checkbox"> Baseline labs within 4 weeks (for Cycle 1).</label>
+        <label><input type="checkbox"> Subsequent labs fall within guidelines (< 3 week cycles = 24h, >= 3 week cycles = 96h).</label>
+        <label><input type="checkbox"> Screened for organ dysfunction/need for dose modification.</label>
+    </div>
+
+    <div class="step-section">
+        <div class="step-title">Steps 8-11: Delivery, Toxicity & Supportive Care</div>
+        <label><input type="checkbox"> Verified appropriate method of drug delivery (Oral/Parenteral/SC).</label>
+        <label><input type="checkbox"> Patient assessed for potential cancer drug toxicities.</label>
+        <label><input type="checkbox"> Protocol-related supportive care ordered (e.g., antinauseants).</label>
+        <label><input type="checkbox"> Patient appropriately counseled and provided handouts.</label>
+    </div>
+
+    <button style="width: 100%; font-size: 1.2em; padding: 15px; background-color: #27ae60;" onclick="alert('Order Screening Complete!')">Submit Screening Assessment</button>
+
+</div>
+
+<script>
+    function calculateBSA() {
+        const height = parseFloat(document.getElementById('height').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        const resultDiv = document.getElementById('bsa-result');
+        
+        if (height > 0 && weight > 0) {
+            const bsa = Math.sqrt((height * weight) / 3600);
+            resultDiv.innerText = `BSA: ${bsa.toFixed(2)} m²`;
+        } else {
+            resultDiv.innerText = "Please enter valid height and weight.";
+        }
+    }
+
+    function calculateVariance() {
+        const prescribed = parseFloat(document.getElementById('prescribed-dose').value);
+        const calculated = parseFloat(document.getElementById('calculated-dose').value);
+        const resultDiv = document.getElementById('variance-result');
+
+        if (prescribed > 0 && calculated > 0) {
+            const variance = Math.abs((prescribed - calculated) / calculated) * 100;
+            resultDiv.innerText = `Variance: ${variance.toFixed(2)}%`;
+            if (variance > 5) {
+                resultDiv.style.color = "#c0392b"; // Red if over 5%
+                resultDiv.innerText += " (Warning: Exceeds 5% variance)";
+            } else {
+                resultDiv.style.color = "#27ae60"; // Green if under 5%
+            }
+        } else {
+            resultDiv.innerText = "Please enter valid dose amounts.";
+        }
+    }
+</script>
+
+</body>
+</html>
