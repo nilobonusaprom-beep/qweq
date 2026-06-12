@@ -1,151 +1,2831 @@
-<!DOCTYPE html>
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>OncoRx – รพ.สกลนคร</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<style>
-:root{
-  --bg:#f0f3f9;
-  --s:#fff;
-  --s2:#f8fafc;
-  --s3:#f1f5f9;
-  --bd:#e2e8f0;
-  --bd2:#cbd5e1;
-  --tx:#0f172a;
-  --tx2:#475569;
-  --tx3:#94a3b8;
-  --ac:#4f46e5;
-  --ac2:#6366f1;
-  --ac-s:#eef2ff;
-  --ac-b:#c7d2fe;
-  --gr:#059669;
-  --gr-s:#ecfdf5;
-  --gr-b:#a7f3d0;
-  --rd:#dc2626;
-  --rd-s:#fef2f2;
-  --rd-b:#fecaca;
-  --am:#d97706;
-  --am-s:#fffbeb;
-  --am-b:#fde68a;
-  --tl:#0d9488;
-  --tl-s:#f0fdfa;
-  --tl-b:#99f6e4;
-  --or:#ea580c;
-  --or-s:#fff7ed;
-  --or-b:#fed7aa;
-  --r:18px;
-  --r2:12px;
-  --r3:8px;
-  --sh:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
-  --sh2:0 4px 24px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.05);
-  --sh3:0 8px 40px rgba(0,0,0,.13),0 2px 8px rgba(0,0,0,.06);
-  --safe-b:env(safe-area-inset-bottom,0px);
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <title>OncoChex — Clinical Verifier</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root {
+
+      --bg: #f3f5fb;
+
+      --surface: rgba(255,255,255,.88);
+
+      --surface-solid: #ffffff;
+
+      --text: #172033;
+
+      --muted: #667085;
+
+      --border: rgba(203,213,225,.9);
+
+      --primary: #4f46e5;
+
+      --primary-2: #7c3aed;
+
+      --blue: #0ea5e9;
+
+      --green: #16a34a;
+
+      --amber: #b45309;
+
+      --red: #dc2626;
+
+      --pink: #ec4899;
+
+      --radius: 18px;
+
+      --radius-sm: 12px;
+
+      --shadow: 0 8px 26px rgba(15,23,42,.08), 0 0 0 1px rgba(203,213,225,.55);
+
+      --input-shadow: inset 0 1px 3px rgba(15,23,42,.06);
+
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+
+      min-height: 100%;
+
+      -webkit-text-size-adjust: 100%;
+
+    }
+
+    body {
+
+      margin: 0;
+
+      font-family: "Inter", "Prompt", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+      color: var(--text);
+
+      background:
+
+        radial-gradient(ellipse 80% 60% at 8% 0%, rgba(99,102,241,.10), transparent 60%),
+
+        radial-gradient(ellipse 60% 50% at 96% 100%, rgba(168,85,247,.08), transparent 60%),
+
+        var(--bg);
+
+      min-height: 100dvh;
+
+      height: auto;
+
+      overflow: auto;
+
+      padding:
+
+        max(12px, env(safe-area-inset-top))
+
+        max(12px, env(safe-area-inset-right))
+
+        max(16px, env(safe-area-inset-bottom))
+
+        max(12px, env(safe-area-inset-left));
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 12px;
+
+      -webkit-font-smoothing: antialiased;
+
+      overscroll-behavior: none;
+
+    }
+
+    input, select, textarea, button {
+
+      font-family: inherit;
+
+      font-size: 16px;
+
+      min-height: 44px;
+
+      -webkit-tap-highlight-color: transparent;
+
+    }
+
+    button {
+
+      cursor: pointer;
+
+      touch-action: manipulation;
+
+    }
+
+    header {
+
+      position: relative;
+
+      z-index: 1;
+
+      overflow: hidden;
+
+      min-height: 80px;
+
+      border-radius: 22px;
+
+      padding: 14px 18px;
+
+      background: #070d1a;
+
+      color: white;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 14px;
+
+      box-shadow: 0 12px 38px rgba(0,0,0,.28), 0 1px 0 rgba(255,255,255,.08) inset;
+
+      border: 1px solid rgba(255,255,255,.06);
+
+      flex-shrink: 0;
+
+    }
+
+    header::before {
+
+      content: "";
+
+      position: absolute;
+
+      inset: 0;
+
+      background:
+
+        radial-gradient(circle at 20% 20%, rgba(99,102,241,.40), transparent 24%),
+
+        radial-gradient(circle at 78% 80%, rgba(14,165,233,.26), transparent 24%);
+
+      filter: blur(10px);
+
+      opacity: .85;
+
+      pointer-events: none;
+
+    }
+
+    .brand {
+
+      position: relative;
+
+      z-index: 2;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 12px;
+
+      min-width: 0;
+
+    }
+
+    .brand-icon {
+
+      width: 50px;
+
+      height: 50px;
+
+      flex: 0 0 auto;
+
+      border-radius: 16px;
+
+      background: linear-gradient(135deg, #6366f1, #0ea5e9);
+
+      display: grid;
+
+      place-items: center;
+
+      box-shadow: 0 0 24px rgba(99,102,241,.45);
+
+      font-size: 26px;
+
+    }
+
+    .brand-title {
+
+      font-size: clamp(24px, 4vw, 32px);
+
+      font-weight: 900;
+
+      letter-spacing: -.05em;
+
+      line-height: 1;
+
+      white-space: nowrap;
+
+    }
+
+    .brand-sub {
+
+      margin-top: 4px;
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: .12em;
+
+      color: #a5b4fc;
+
+      font-weight: 800;
+
+      white-space: nowrap;
+
+    }
+
+    .header-actions {
+
+      position: relative;
+
+      z-index: 2;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      flex-shrink: 0;
+
+    }
+
+    .system-pill {
+
+      text-align: right;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      color: #4ade80;
+
+      white-space: nowrap;
+
+    }
+
+    .system-pill small {
+
+      display: block;
+
+      color: #94a3b8;
+
+      font-size: 9px;
+
+      letter-spacing: .1em;
+
+      text-transform: uppercase;
+
+    }
+
+    .card {
+
+      background: var(--surface);
+
+      border: 1px solid var(--border);
+
+      border-radius: var(--radius);
+
+      box-shadow: var(--shadow);
+
+      backdrop-filter: blur(16px);
+
+      -webkit-backdrop-filter: blur(16px);
+
+    }
+
+    main {
+
+      position: relative;
+
+      z-index: 1;
+
+      display: flex;
+
+      gap: 12px;
+
+      min-height: 0;
+
+      flex: 1;
+
+    }
+
+    aside {
+
+      width: 330px;
+
+      flex: 0 0 330px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 12px;
+
+      min-height: 0;
+
+    }
+
+    section.app-panel {
+
+      flex: 1;
+
+      min-width: 0;
+
+      display: flex;
+
+      flex-direction: column;
+
+      overflow: hidden;
+
+      border-top: 4px solid var(--primary);
+
+    }
+
+    .section-label {
+
+      font-size: 13px;
+
+      font-weight: 900;
+
+      text-transform: uppercase;
+
+      letter-spacing: .05em;
+
+      color: #344054;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      margin-bottom: 12px;
+
+    }
+
+    .num {
+
+      width: 24px;
+
+      height: 24px;
+
+      border-radius: 8px;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background: #eef2ff;
+
+      color: var(--primary);
+
+      font-size: 12px;
+
+      font-weight: 900;
+
+    }
+
+    .field-label {
+
+      font-size: 12px;
+
+      font-weight: 800;
+
+      color: #475467;
+
+      margin-bottom: 6px;
+
+    }
+
+    .inp {
+
+      width: 100%;
+
+      background: white;
+
+      border: 1.5px solid #dbe3ef;
+
+      border-radius: var(--radius-sm);
+
+      padding: 10px 12px;
+
+      color: var(--text);
+
+      font-weight: 800;
+
+      box-shadow: var(--input-shadow);
+
+      outline: none;
+
+      transition: border-color .15s, box-shadow .15s, background .15s;
+
+    }
+
+    .inp:focus {
+
+      border-color: var(--primary);
+
+      box-shadow: 0 0 0 4px rgba(79,70,229,.14), var(--input-shadow);
+
+    }
+
+    .grid-2 {
+
+      display: grid;
+
+      grid-template-columns: repeat(2, minmax(0,1fr));
+
+      gap: 10px;
+
+    }
+
+    .panel-pad { padding: 16px; }
+
+    .lab-badge {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 5px;
+
+      min-height: 36px;
+
+      padding: 6px 10px;
+
+      border-radius: 999px;
+
+      font-size: 12px;
+
+      font-weight: 900;
+
+      border: 1.5px solid;
+
+      flex: 1;
+
+      text-align: center;
+
+    }
+
+    .lab-pass { background: #f0fdf4; color: #15803d; border-color: #86efac; }
+
+    .lab-fail { background: #fef2f2; color: #991b1b; border-color: #fca5a5; animation: pulse-soft 1.5s infinite; }
+
+    .lab-empty { background: #f8fafc; color: #98a2b3; border-color: #e4e7ec; }
+
+    @keyframes pulse-soft { 0%,100%{opacity:1} 50%{opacity:.72} }
+
+    .btn {
+
+      border: 0;
+
+      border-radius: 12px;
+
+      padding: 10px 14px;
+
+      font-size: 13px;
+
+      font-weight: 900;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 7px;
+
+      white-space: nowrap;
+
+    }
+
+    .btn-primary { color: white; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 6px 16px rgba(79,70,229,.22); }
+
+    .btn-blue { color: white; background: linear-gradient(135deg, #0ea5e9, #6366f1); box-shadow: 0 6px 16px rgba(14,165,233,.22); }
+
+    .btn-green { color: #15803d; background: #f0fdf4; border: 1.5px solid #86efac; }
+
+    .btn-rose { color: #dc2626; background: #fef2f2; border: 1.5px solid #fecaca; }
+
+    .btn-ghost { color: #c7d2fe; background: rgba(99,102,241,.12); border: 1px solid rgba(165,180,252,.28); }
+
+    .toolbar {
+
+      padding: 14px 16px;
+
+      border-bottom: 1px solid #e8edf5;
+
+      background: rgba(248,250,252,.72);
+
+      flex-shrink: 0;
+
+    }
+
+    .toolbar-row {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      flex-wrap: wrap;
+
+    }
+
+    .protocol-wrap {
+
+      position: relative;
+
+      width: min(320px, 100%);
+
+      flex: 0 1 320px;
+
+    }
+
+    .clear-btn {
+
+      position: absolute;
+
+      right: 7px;
+
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      border: 0;
+
+      background: transparent;
+
+      min-height: 32px;
+
+      width: 32px;
+
+      color: #98a2b3;
+
+      font-size: 18px;
+
+      padding: 0;
+
+    }
+
+    .mini-chip {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 6px;
+
+      background: #f5f3ff;
+
+      border: 1.5px solid #c4b5fd;
+
+      border-radius: 12px;
+
+      padding: 8px 12px;
+
+      min-height: 44px;
+
+    }
+
+    .mini-chip .label {
+
+      font-size: 10px;
+
+      font-weight: 900;
+
+      color: #7c3aed;
+
+      text-transform: uppercase;
+
+      letter-spacing: .06em;
+
+    }
+
+    .mini-chip .value {
+
+      font-size: 20px;
+
+      font-weight: 900;
+
+      color: var(--primary);
+
+      font-variant-numeric: tabular-nums;
+
+      line-height: 1;
+
+    }
+
+    #drug-container {
+
+      flex: 1;
+
+      min-height: 0;
+
+      overflow-y: auto;
+
+      padding: 14px 16px 18px;
+
+      -webkit-overflow-scrolling: touch;
+
+    }
+
+    .empty-state {
+
+      min-height: 360px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      text-align: center;
+
+      color: #98a2b3;
+
+      font-weight: 700;
+
+      padding: 30px;
+
+    }
+
+    .drug-list {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 10px;
+
+    }
+
+    .drug-row {
+
+      background: white;
+
+      border: 1.5px solid #e8edf5;
+
+      border-radius: 16px;
+
+      padding: 12px;
+
+      display: grid;
+
+      grid-template-columns: 1.7fr 1fr 1.55fr 1.45fr;
+
+      gap: 10px;
+
+      align-items: center;
+
+      box-shadow: 0 1px 6px rgba(15,23,42,.04);
+
+    }
+
+    .drug-name-input {
+
+      font-size: 16px;
+
+      font-weight: 900;
+
+      color: #172033;
+
+      border-color: transparent;
+
+      background: transparent;
+
+      box-shadow: none;
+
+      padding-left: 0;
+
+    }
+
+    .drug-name-input:focus {
+
+      background: white;
+
+      border-color: var(--primary);
+
+      padding-left: 10px;
+
+    }
+
+    .small-row {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      flex-wrap: wrap;
+
+    }
+
+    .small-label {
+
+      color: #667085;
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+      text-transform: uppercase;
+
+    }
+
+    .calc-box {
+
+      min-height: 66px;
+
+      background: #f5f3ff;
+
+      border: 1.5px solid #e0e7ff;
+
+      border-radius: 14px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      text-align: center;
+
+      position: relative;
+
+      padding: 8px;
+
+      flex-direction: column;
+
+    }
+
+    .calc-dose {
+
+      font-size: 28px;
+
+      font-weight: 900;
+
+      color: var(--primary);
+
+      letter-spacing: -.04em;
+
+      font-variant-numeric: tabular-nums;
+
+      line-height: 1;
+
+    }
+
+    .unit {
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+      color: #818cf8;
+
+    }
+
+    .chip {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 3px 8px;
+
+      border-radius: 999px;
+
+      font-size: 10px;
+
+      font-weight: 900;
+
+      margin-top: 4px;
+
+    }
+
+    .chip-amber { background: #fffbeb; color: #92400e; border: 1px solid #fcd34d; }
+
+    .chip-blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+
+    .chip-red { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; animation: pulse-soft 1.8s infinite; }
+
+    .conc-box {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 4px;
+
+      background: #f8fafc;
+
+      border: 1.5px solid #e8edf5;
+
+      border-radius: 10px;
+
+      padding: 8px;
+
+      flex: 1;
+
+      min-height: 44px;
+
+    }
+
+    .conc-box span:nth-child(2) {
+
+      font-size: 15px;
+
+      font-weight: 900;
+
+      color: var(--primary);
+
+    }
+
+    .var-badge {
+
+      min-height: 66px;
+
+      padding: 8px;
+
+      border-radius: 14px;
+
+      border: 1.5px solid;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      justify-content: center;
+
+      text-align: center;
+
+      flex: 1;
+
+      font-weight: 900;
+
+    }
+
+    .var-safe { background:#f0fdf4; color:#15803d; border-color:#86efac; }
+
+    .var-warn { background:#fffbeb; color:#92400e; border-color:#fcd34d; }
+
+    .var-danger { background:#fef2f2; color:#991b1b; border-color:#fca5a5; animation:pulse-soft 1.5s infinite; }
+
+    .var-empty { background:#f8fafc; color:#98a2b3; border-color:#e4e7ec; }
+
+    .modal {
+
+      display: none;
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 100;
+
+      background: rgba(10,15,30,.72);
+
+      backdrop-filter: blur(8px);
+
+      -webkit-backdrop-filter: blur(8px);
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+
+    }
+
+    .modal-card {
+
+      width: min(560px, 100%);
+
+      max-height: min(90dvh, 720px);
+
+      overflow-y: auto;
+
+      -webkit-overflow-scrolling: touch;
+
+      background: white;
+
+      border-radius: 22px;
+
+      box-shadow: 0 24px 60px rgba(0,0,0,.38);
+
+      padding: 22px;
+
+      position: relative;
+
+    }
+
+    .modal-close {
+
+      position: absolute;
+
+      right: 14px;
+
+      top: 14px;
+
+      width: 40px;
+
+      min-height: 40px;
+
+      border: 0;
+
+      background: #f8fafc;
+
+      border-radius: 12px;
+
+      color: #667085;
+
+      font-size: 20px;
+
+      font-weight: 900;
+
+    }
+
+    .dropzone {
+
+      border: 2px dashed #c4b5fd;
+
+      border-radius: 18px;
+
+      padding: 28px 18px;
+
+      text-align: center;
+
+      background: #fafaff;
+
+      color: var(--primary);
+
+      font-weight: 900;
+
+    }
+
+    .status-box {
+
+      display: none;
+
+      border-radius: 12px;
+
+      padding: 12px 14px;
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      text-align: center;
+
+      margin-bottom: 12px;
+
+      border: 1.5px solid transparent;
+
+    }
+
+    @media (max-width: 1024px) {
+
+      main {
+
+        flex-direction: column;
+
+      }
+
+      aside {
+
+        width: 100%;
+
+        flex: 0 0 auto;
+
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+
+      }
+
+      aside .safety-card {
+
+        grid-column: 1 / -1;
+
+      }
+
+      section.app-panel {
+
+        overflow: visible;
+
+      }
+
+      #drug-container {
+
+        overflow: visible;
+
+      }
+
+    }
+
+    @media (max-width: 768px) {
+
+      body { gap: 10px; }
+
+      header { padding: 14px; }
+
+      .brand-icon { width: 44px; height: 44px; border-radius: 14px; }
+
+      .brand-title { font-size: 24px; }
+
+      .brand-sub { font-size: 8px; }
+
+      .system-pill { display: none; }
+
+      .header-actions .btn span { display: none; }
+
+      aside {
+
+        display: flex;
+
+      }
+
+      .toolbar-row {
+
+        align-items: stretch;
+
+      }
+
+      .protocol-wrap {
+
+        width: 100%;
+
+        flex-basis: 100%;
+
+      }
+
+      .toolbar .section-label {
+
+        width: 100%;
+
+        margin-bottom: 0;
+
+      }
+
+      .mini-chip {
+
+        flex: 1 1 calc(50% - 5px);
+
+      }
+
+      .toolbar .btn {
+
+        flex: 1 1 calc(50% - 5px);
+
+      }
+
+      .drug-row {
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        padding: 14px;
+
+        gap: 12px;
+
+      }
+
+      .drug-row > div {
+
+        width: 100%;
+
+      }
+
+      .drug-name-input { font-size: 18px; }
+
+      .calc-dose { font-size: 32px; }
+
+      .small-row > .inp {
+
+        flex: 1 1 auto;
+
+      }
+
+      .var-badge { min-height: 56px; }
+
+      #safety-badges > div {
+
+        flex-direction: column;
+
+      }
+
+    }
+
+    @media (max-width: 430px) {
+
+      .grid-2 {
+
+        grid-template-columns: 1fr;
+
+      }
+
+      .panel-pad {
+
+        padding: 14px;
+
+      }
+
+      .toolbar .btn {
+
+        flex-basis: 100%;
+
+      }
+
+      .mini-chip {
+
+        flex-basis: 100%;
+
+      }
+
+      .modal-card {
+
+        padding: 18px;
+
+        border-radius: 20px;
+
+      }
+
+      .brand-title { font-size: 22px; }
+
+    }
+
+    @media print {
+
+      body {
+
+        background: white;
+
+        padding: 0;
+
+      }
+
+      header, .no-print, .modal {
+
+        display: none !important;
+
+      }
+
+      main, aside {
+
+        display: block;
+
+      }
+
+      .card {
+
+        box-shadow: none;
+
+        border: 1px solid #ddd;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div id="ocr-modal" class="modal">
+
+    <div class="modal-card">
+
+      <button class="modal-close" onclick="closeOCR()">×</button>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-right:44px;">
+
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#0ea5e9,#6366f1);border-radius:14px;display:grid;place-items:center;font-size:22px;">📷</div>
+
+        <div>
+
+          <div style="font-size:18px;font-weight:900;color:#172033;">สแกน Chemo Order</div>
+
+          <div style="font-size:12px;color:#667085;font-weight:700;">ใช้ Claude Vision อ่านข้อมูลจากรูป order</div>
+
+        </div>
+
+      </div>
+
+      <div style="background:#f8fafc;border:1.5px solid #e4e7ec;border-radius:16px;padding:14px;margin-bottom:14px;">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
+
+          <span style="font-size:12px;font-weight:900;color:#344054;">🔑 Anthropic API Key</span>
+
+          <a href="https://console.anthropic.com/keys" target="_blank" rel="noopener" style="font-size:11px;color:#4f46e5;font-weight:900;text-decoration:none;">เปิดหน้า Keys →</a>
+
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+
+          <input type="password" id="ocr-apikey-input" class="inp" placeholder="sk-ant-api03-..." style="flex:1;min-width:220px;font-family:ui-monospace,monospace;">
+
+          <button onclick="saveAPIKey()" class="btn btn-primary">บันทึก</button>
+
+        </div>
+
+        <div id="ocr-key-status" style="font-size:11px;color:#98a2b3;margin-top:7px;font-weight:700;">เก็บ API key ใน browser นี้เท่านั้น</div>
+
+      </div>
+
+      <div id="ocr-dropzone" class="dropzone" onclick="document.getElementById('ocr-file-input').click()">
+
+        <div style="font-size:36px;margin-bottom:8px;">🖼️</div>
+
+        <div>แตะเพื่อเลือกรูป / ถ่ายรูป order</div>
+
+        <div style="font-size:12px;color:#98a2b3;margin-top:4px;">รองรับ JPG, PNG</div>
+
+      </div>
+
+      <div id="ocr-status" class="status-box"></div>
+
+      <div id="ocr-preview" style="display:none;margin-bottom:12px;">
+
+        <img id="ocr-img" style="max-width:100%;border-radius:14px;border:1px solid #e4e7ec;max-height:220px;object-fit:contain;display:block;margin:0 auto;">
+
+      </div>
+
+      <div id="ocr-result" style="display:none;margin-bottom:12px;"></div>
+
+      <button id="ocr-apply-btn" onclick="applyOCRResult()" class="btn btn-primary" style="display:none;width:100%;">
+
+        ✅ ใช้ข้อมูลนี้เลย
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <header>
+
+    <div class="brand">
+
+      <div class="brand-icon">💊</div>
+
+      <div>
+
+        <div class="brand-title">OncoChex</div>
+
+        <div class="brand-sub">Clinical Pharmacy Engine</div>
+
+      </div>
+
+    </div>
+
+    <div class="header-actions">
+
+      <div class="system-pill"><small>System</small>● READY</div>
+
+      <button onclick="resetApp()" class="btn btn-ghost">↻ <span>เริ่มใหม่</span></button>
+
+    </div>
+
+  </header>
+
+  <main>
+
+    <aside>
+
+      <div class="card panel-pad" style="border-top:4px solid #4f46e5;">
+
+        <div class="section-label"><span class="num">1</span>ข้อมูลคนไข้</div>
+
+        <div class="grid-2">
+
+          <div><div class="field-label">Wt (kg)</div><input type="number" id="wt" class="inp nav-input" placeholder="น้ำหนัก" inputmode="decimal"></div>
+
+          <div><div class="field-label">Ht (cm)</div><input type="number" id="ht" class="inp nav-input" placeholder="ส่วนสูง" inputmode="decimal"></div>
+
+          <div><div class="field-label">Age (ปี)</div><input type="number" id="age" class="inp nav-input" placeholder="อายุ" inputmode="numeric"></div>
+
+          <div><div class="field-label">Sex</div><select id="sex" class="inp nav-input"><option value="M">ชาย (M)</option><option value="F">หญิง (F)</option></select></div>
+
+        </div>
+
+      </div>
+
+      <div class="card panel-pad" style="border-top:4px solid #ec4899;">
+
+        <div class="section-label"><span class="num" style="background:#fdf2f8;color:#be185d;">2</span>ผลเลือด</div>
+
+        <div class="grid-2">
+
+          <div><div class="field-label">SCr (mg/dL)</div><input type="number" step="0.1" id="scr" class="inp nav-input" placeholder="SCr" inputmode="decimal"></div>
+
+          <div><div class="field-label">Hb (g/dL)</div><input type="number" step="0.1" id="hb" class="inp nav-input" placeholder="Hb" inputmode="decimal"></div>
+
+          <div><div class="field-label">WBC (/mm³)</div><input type="number" id="wbc" class="inp nav-input" placeholder="WBC" inputmode="numeric"></div>
+
+          <div><div class="field-label">Neutrophil (%)</div><input type="number" id="neut" class="inp nav-input" placeholder="%Neut" inputmode="decimal"></div>
+
+          <div style="grid-column:1/-1;"><div class="field-label">Platelets <span style="color:#4f46e5;">(พิมพ์ค่า ×10³)</span></div><input type="number" id="plt" class="inp nav-input" placeholder="เช่น 150" inputmode="numeric"></div>
+
+        </div>
+
+      </div>
+
+      <div class="card panel-pad safety-card" style="display:flex;flex-direction:column;gap:10px;">
+
+        <div id="safety-banner" style="display:none;border-radius:14px;padding:10px 12px;border:1.5px solid;text-align:center;"></div>
+
+        <div id="safety-badges" style="display:flex;flex-direction:column;gap:8px;">
+
+          <span style="font-size:13px;color:#98a2b3;text-align:center;font-weight:700;">รอข้อมูลผลแล็บ...</span>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+    <section class="card app-panel">
+
+      <div class="toolbar">
+
+        <div class="toolbar-row">
+
+          <div class="section-label" style="margin:0;"><span class="num">3</span>สูตรยา</div>
+
+          <div class="protocol-wrap">
+
+            <input type="text" id="protocol-select" list="protocol-options" class="inp nav-input" placeholder="🔍 ค้นหาหรือเลือกสูตรยา..." autocomplete="off">
+
+            <datalist id="protocol-options"></datalist>
+
+            <button class="clear-btn" onclick="clearProtocol()" title="ล้าง">×</button>
+
+          </div>
+
+          <button onclick="openOCRPicker()" class="btn btn-blue no-print">📷 สแกน Order</button>
+
+          <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display:none;" onchange="handleOCRFile(event)">
+
+          <button onclick="initCustomProtocol()" class="btn btn-primary no-print">✨ สร้างสูตรเอง</button>
+
+          <button id="add-custom-btn" onclick="addCustomDrug()" class="btn btn-green no-print" style="display:none;">+ เพิ่มยา</button>
+
+          <div style="flex:1;"></div>
+
+          <div class="mini-chip">
+
+            <span class="label">BSA</span>
+
+            <span class="value" id="out-bsa">--</span>
+
+            <span style="font-size:11px;font-weight:800;color:#8b5cf6;">m²</span>
+
+          </div>
+
+          <div class="mini-chip">
+
+            <span class="label">CrCl</span>
+
+            <span class="value" id="out-crcl">--</span>
+
+            <span style="font-size:11px;font-weight:800;color:#8b5cf6;" id="crcl-note-mini">mL/min</span>
+
+          </div>
+
+          <button onclick="printSummary()" class="btn btn-green no-print">🖨️ พิมพ์</button>
+
+        </div>
+
+      </div>
+
+      <div id="drug-container">
+
+        <div class="empty-state">
+
+          <div>
+
+            <div style="font-size:44px;margin-bottom:8px;">🧬</div>
+
+            พิมพ์ค้นหาหรือเลือกสูตรยาด้านบนเพื่อเริ่มประมวลผล
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+<script>
+
+const tsvData = `
+
+5FU/LV – CCRT	Leucovorin	20	Direct IV push	BSA	-
+5FU/LV – CCRT	5-Fluorouracil (5-FU)	400	NSS 100 ml IV drip	BSA	100
+Bevacizumab	Bevacizumab	7.5	NSS 100 ml IV 90 min	Weight	100
+Bevacizumab + XELOX	Oxaliplatin	130	5%DW 250 ml IV 2 hrs	BSA	250
+Bevacizumab + XELOX	Bevacizumab	7.5	NSS 100 ml IV 90 min	Weight	100
+Bevacizumab + XELOX	Capecitabine (PO)	1000	Oral (BID x14 days)	BSA	-
+Bortezomib (VCD)	Bortezomib	1.3	SC injection	BSA	-
+Bortezomib (VCD)	Cyclophosphamide	300	NSS 100 ml IV	BSA	100
+Bortezomib (VCD)	Dexamethasone	40	Oral/IV	Fixed	-
+Carboplatin / Gemcitabine	Carboplatin	5	5%DW 100 ml IV 1 hr	AUC	100
+Carboplatin / Gemcitabine	Gemcitabine	1000	NSS 100 ml IV 30 min	BSA	100
+Carboplatin + 5-FU	Carboplatin	5	5%DW 100 ml IV 1 hr (D1)	AUC	100
+Carboplatin + 5-FU	5-Fluorouracil (5-FU)	1200	NSS 1000 ml IV 24 hr (D1-4)	BSA	1000
+Carboplatin/Paclitaxel q3wk	Paclitaxel	175	NSS 500 ml IV 3 hr	BSA	500
+Carboplatin/Paclitaxel q3wk	Carboplatin	5	5%DW 100 ml IV 1 hr	AUC	100
+Carboplatin CCRT	Carboplatin	2	5%DW 100 ml IV 1 hr	AUC	100
+Carbo/Paclitaxel (Weekly)	Paclitaxel	50	5%DW 250 ml IV 1 hr	BSA	250
+Carbo/Paclitaxel (Weekly)	Carboplatin	2	5%DW 100 ml IV 1 hr	AUC	100
+CHOP	Cyclophosphamide	750	NSS 100 ml IV 15 min	BSA	100
+CHOP	Doxorubicin	50	NSS 50 ml IV push	BSA	50
+CHOP	Vincristine	1.4	NSS 50 ml IV free flow	BSA	50
+Cis/Gem – CHCA	Cisplatin	25	NSS 100 ml IV 1 hr	BSA	100
+Cis/Gem – CHCA	Gemcitabine	1000	NSS 100 ml IV 30 min	BSA	100
+Cisplatin CCRT	Cisplatin	40	NSS 100 ml IV drip 1 hr	BSA	100
+Cisplatin + 5-FU	Cisplatin	75	NSS 250 ml IV 2 hr	BSA	250
+Cisplatin + 5-FU	5-Fluorouracil (5-FU)	1000	NSS 1000 ml IV 24 hr	BSA	1000
+Docetaxel	Docetaxel	75	NSS 250 ml IV 90 min	BSA	250
+ENHERTU	Trastuzumab deruxtecan	5.4	5%DW 100 ml IV 90 min	Weight	100
+FAC Regimen	Doxorubicin	50	NSS 50 ml IV push	BSA	50
+FAC Regimen	Cyclophosphamide	500	NSS 100 ml IV 15 min	BSA	100
+FAC Regimen	5-Fluorouracil (5-FU)	500	NSS 100 ml IV drip	BSA	100
+FLOX Week 1,3,5	Oxaliplatin	85	5%DW 250 ml IV 2 hr	BSA	250
+FLOX Week 1,3,5	Leucovorin	500	5%DW 250 ml IV 2 hr	BSA	250
+FLOX Week 1,3,5	5-FU (Bolus)	500	NSS 100 ml IV 10 min	BSA	100
+GEM-Abraxane	Abraxane (nab-Paclitaxel)	125	NSS 100 ml IV 30 min	BSA	100
+GEM-Abraxane	Gemcitabine	1000	NSS 100 ml IV 30 min	BSA	100
+Gemcitabine / Docetaxel	Docetaxel	75	NSS 250 ml IV 2 hr	BSA	250
+Gemcitabine / Docetaxel	Gemcitabine	1000	NSS 250 ml IV 90 min	BSA	250
+Herceptin (mono)	Trastuzumab (Herceptin)	6	NSS 250 ml IV 90 min	Weight	250
+Herceptin + Docetaxel	Trastuzumab (Herceptin)	8	NSS 250 ml IV 90 min	Weight	250
+Herceptin + Docetaxel	Docetaxel	75	NSS 250 ml IV 90 min	BSA	250
+Herceptin + Paclitaxel	Trastuzumab (Herceptin)	6	NSS 250 ml IV 90 min	Weight	250
+Herceptin + Paclitaxel	Paclitaxel	175	5%DW 500 ml IV 3 hr	BSA	500
+High Dose MTX (PCNSL)	Methotrexate	3500	D5S 1000 ml IV 6 hr	BSA	1000
+ABVD	Doxorubicin	25	NSS 50 ml IV push	BSA	50
+ABVD	Bleomycin	10	NSS 50 ml IV push	BSA	50
+ABVD	Vinblastine	6	NSS 50 ml IV push	BSA	50
+ABVD	Dacarbazine	375	NSS 250 ml IV 1 hr	BSA	250
+ICE	Ifosfamide+Mesna	5000	5%DW 1000 ml IV 24 hr	BSA	1000
+ICE	Carboplatin	5	5%DW 250 ml IV 1 hr	AUC	250
+ICE	Etoposide	100	5%DW 500 ml IV	BSA	500
+Irinotecan (mono)	Irinotecan	150	5%DW 500 ml IV 90 min	BSA	500
+Bleomycin / Vincristine	Bleomycin	10	NSS 50 ml IV push	BSA	50
+Bleomycin / Vincristine	Vincristine	1.4	NSS 50 ml IV free flow	BSA	50
+mFOLFIRI	Irinotecan	150	5%DW 250 ml IV 90 min	BSA	250
+mFOLFIRI	Leucovorin	400	5%DW 250 ml IV 90 min	BSA	250
+mFOLFIRI	5-FU (Bolus)	400	NSS 50 ml IV push	BSA	50
+mFOLFIRI	5-FU (Continuous)	1200	NSS 1000 ml IV 23 hrs	BSA	1000
+mFOLFOX6 (mono)	Oxaliplatin	85	5%DW 250 ml IV 2 hrs	BSA	250
+mFOLFOX6 (mono)	Leucovorin	400	5%DW 250 ml IV 2 hrs	BSA	250
+mFOLFOX6 (mono)	5-FU (Bolus)	400	NSS 50 ml IV push	BSA	50
+mFOLFOX6 (mono)	5-FU (Continuous)	1200	NSS 1000 ml IV 22 hrs	BSA	1000
+mFOLFOX6 + Panitumumab	Panitumumab	6	NSS 100 ml IV 1 hr	Weight	100
+mFOLFOX6 + Panitumumab	Oxaliplatin	85	5%DW 250 ml IV 2 hrs	BSA	250
+mFOLFOX6 + Panitumumab	Leucovorin	400	5%DW 250 ml IV 2 hrs	BSA	250
+mFOLFOX6 + Panitumumab	5-FU (Bolus)	400	NSS 50 ml IV push	BSA	50
+mFOLFOX6 + Panitumumab	5-FU (Continuous)	1200	NSS 1000 ml IV 22 hrs	BSA	1000
+Nivolumab	Nivolumab	240	0.9% NaCl 100 ml IV 30m	Fixed	100
+AC Regimen	Doxorubicin	60	0.9% NaCl 50 ml IV push	BSA	50
+AC Regimen	Cyclophosphamide	600	0.9% NaCl 100 ml IV 15m	BSA	100
+Paclitaxel (Weekly)	Paclitaxel	60	5%DW 250 ml IV 1 hr	BSA	250
+Paclitaxel q3wk	Paclitaxel	175	NSS 500 ml IV 3 hr	BSA	500
+Pembrolizumab	Pembrolizumab	200	0.9% NaCl 100 ml IV 30m	Fixed	100
+Pemetrexed (mono)	Pemetrexed	500	NSS 100 ml IV 10 min	BSA	100
+Per/Her + Docetaxel	Pertuzumab	840	NSS 250 ml IV 60 min	Fixed	250
+Per/Her + Docetaxel	Trastuzumab (Herceptin)	600	SC injection	Fixed	-
+Per/Her + Docetaxel	Docetaxel	75	5%DW 250 ml IV 90 min	BSA	250
+R-CHOP	Rituximab	375	NSS 500 ml IV	BSA	500
+R-CHOP	Cyclophosphamide	750	NSS 100 ml IV 15 min	BSA	100
+R-CHOP	Doxorubicin	50	NSS 50 ml IV push	BSA	50
+R-CHOP	Vincristine	1.4	NSS 50 ml IV free flow	BSA	50
+TC / TCH Regimen	Trastuzumab (Herceptin)	8	0.9% NaCl 250 ml 90m	Weight	250
+TC / TCH Regimen	Docetaxel	75	0.9% NaCl 250 ml 90m	BSA	250
+TC / TCH Regimen	Cyclophosphamide	600	0.9% NaCl 100 ml 15m	BSA	100
+XELOX	Oxaliplatin	130	5%DW 250 ml IV 2 hrs	BSA	250
+XELOX	Capecitabine (PO)	1000	Oral (BID x14 days)	BSA	-
+Zoledronic acid	Zoledronic acid	4	NSS 100 ml IV 15 min	Fixed	100
+
+`.trim();
+
+const db = { CUSTOM: [] };
+
+tsvData.split("\\n").forEach(line => {
+
+  const [protocol, name, dose, diluent, basis, volStr] = line.split("\\t");
+
+  if (!db[protocol]) db[protocol] = [];
+
+  const volRaw = (volStr || "").trim();
+
+  db[protocol].push({
+
+    name,
+
+    target: parseFloat(dose) || 0,
+
+    basis,
+
+    diluentText: diluent || "",
+
+    defaultVol: volRaw === "-" || volRaw === "" ? null : parseInt(volRaw, 10)
+
+  });
+
+});
+
+const datalist = document.getElementById("protocol-options");
+
+Object.keys(db).sort().forEach(key => {
+
+  if (key !== "CUSTOM") {
+
+    const opt = document.createElement("option");
+
+    opt.value = key;
+
+    datalist.appendChild(opt);
+
+  }
+
+});
+
+let state = { bsa: 0, crcl: 0, wt: 0 };
+
+let currentProtocolArray = [];
+
+let isCustomMode = false;
+
+let ocrParsed = null;
+
+function $(id) { return document.getElementById(id); }
+
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function emptyDrugHTML() {
+
+  return `<div class="empty-state"><div><div style="font-size:44px;margin-bottom:8px;">🧬</div>พิมพ์ค้นหาหรือเลือกสูตรยาด้านบนเพื่อเริ่มประมวลผล</div></div>`;
+
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{font-family:'Prompt',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--tx);min-height:100svh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-/* ── HEADER ── */
-.hdr{
-  background:linear-gradient(150deg,#1e1b4b 0%,#312e81 45%,#1d4ed8 100%);
-  padding:max(56px,env(safe-area-inset-top,0px)+20px) 20px 32px;
-  position:relative;overflow:hidden;
+function getSortedKeys() { return Object.keys(db).filter(k => k !== "CUSTOM").sort(); }
+
+function clearProtocol() {
+
+  $("protocol-select").value = "";
+
+  $("protocol-select").dispatchEvent(new Event("input"));
+
+  $("protocol-select").focus();
+
 }
-.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 80% at 50% -30%,rgba(99,102,241,.5),transparent)}
-.hdr::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:48px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%)}
-.hdr-in{position:relative;z-index:1;max-width:580px;margin:0 auto;display:flex;align-items:center;gap:14px}
-.hdr-ico{width:52px;height:52px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,.25)}
-.hdr-ico i{font-size:22px;color:#a5b4fc}
-.hdr-title h1{color:#fff;font-size:20px;font-weight:800;letter-spacing:-.3px;line-height:1.2}
-.hdr-title h1 span{color:#a5b4fc}
-.hdr-title p{color:#a5b4fc;font-size:11px;font-weight:400;margin-top:3px}
-.hdr-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(165,180,252,.15);border:1px solid rgba(165,180,252,.25);border-radius:100px;padding:4px 10px;margin-top:8px;font-size:10px;color:#c7d2fe;font-weight:500}
 
-/* ── MAIN ── */
-.main{max-width:580px;margin:0 auto;padding:20px 14px calc(48px + var(--safe-b))}
+function initCustomProtocol() {
 
-/* ── TABS ── */
-.tabs{display:flex;gap:5px;background:var(--s);border-radius:var(--r);padding:4px;box-shadow:var(--sh);margin-bottom:18px}
-.tab{flex:1;padding:10px 6px;border:none;background:transparent;cursor:pointer;border-radius:var(--r2);font-family:inherit;font-size:11.5px;font-weight:700;color:var(--tx3);transition:all .22s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;letter-spacing:.2px}
-.tab i{font-size:12px}
-.tab.on{background:var(--ac);color:#fff;box-shadow:0 2px 10px rgba(79,70,229,.35)}
+  $("protocol-select").value = "CUSTOM";
 
-/* ── PANEL ── */
-.panel{display:none;animation:fadeIn .25s ease}
-.panel.on{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  $("protocol-select").dispatchEvent(new Event("input"));
 
-/* ── CARD ── */
-.card{background:var(--s);border-radius:var(--r);padding:18px;box-shadow:var(--sh);margin-bottom:12px;border:1px solid var(--bd)}
-.card-ttl{font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:.9px;margin-bottom:14px;display:flex;align-items:center;gap:7px}
-.card-ttl i{color:var(--ac);font-size:13px}
-.card-ttl::after{content:'';flex:1;height:1px;background:var(--bd)}
+}
 
-/* ── LABEL ── */
-.lbl{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--tx2);margin-bottom:7px}
-.lbl-ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+function addCustomDrug() {
 
-/* ── INPUTS ── */
-.inp{width:100%;padding:13px 42px 13px 14px;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:inherit;font-size:15px;font-weight:500;color:var(--tx);outline:none;transition:border-color .2s,box-shadow .2s,background .2s;-webkit-appearance:none;appearance:none}
-.inp:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:#fff}
-.inp::placeholder{color:var(--tx3);font-weight:400}
-.inp-wrap{position:relative}
-.inp-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:14px;pointer-events:none;transition:color .2s}
-.inp:focus~.inp-ico{color:var(--ac)}
-.clr-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:17px;cursor:pointer;background:none;border:none;display:none;transition:color .2s;padding:2px}
-.clr-btn:hover{color:var(--rd)}
+  currentProtocolArray.push({ name: "", target: "", basis: "BSA", diluentText: "", defaultVol: 100 });
 
-.sel{width:100%;padding:13px 42px 13px 14px;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:inherit;font-size:15px;font-weight:500;color:var(--tx);outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .2s,box-shadow .2s}
-.sel:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.1);background-color:#fff}
+  renderCards();
 
-/* Dropdown */
-.ddown{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--s);border:1.5px solid var(--bd);border-radius:var(--r2);max-height:230px;overflow-y:auto;box-shadow:var(--sh3);z-index:200;display:none}
-.ddown::-webkit-scrollbar{width:4px}
-.ddown::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
-.dopt{padding:12px 14px;font-size:14px;font-weight:500;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--s3);transition:background .12s;display:flex;align-items:center;justify-content:space-between}
-.dopt:last-child{border:none}
-.dopt:hover,.dopt.on{background:var(--ac-s);color:var(--ac)}
-.dopt.on{font-weight:700}
-.dopt-empty{padding:16px;text-align:center;font-size:13px;color:var(--tx3)}
+}
 
-/* ── NUM INPUT ── */
-.num-w{display:flex;align-items:center;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r2);overflow:hidden;transition:border-color .2s,box-shadow .2s}
-.num-w:focus-within{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:#fff}
-.num{flex:1;padding:13px 12px;background:transparent;border:none;font-family:inherit;font-size:19px;font-weight:700;color:var(--tx);outline:none;-webkit-appearance:none;appearance:none;min-width:0}
-.num::placeholder{color:var(--tx3);font-size:15px;font-weight:400}
-.num-unit{padding:0 14px;font-size:12px;font-weight:700;color:var(--tx3);border-left:1px solid var(--bd);white-space:nowrap;align-self:stretch;display:flex;align-items:center}
+function resetApp() {
 
-/* Stepper */
-.steps{display:flex;gap:5px;margin-top:7px}
-.step{flex:1;padding:8px;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r3);font-family:inherit;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;transition:all .15s;text-align:center;-webkit-appearance:none}
-.step:active{background:var(--ac-s);border-color:var(--ac);color:var(--ac);transform:scale(.94)}
+  document.querySelectorAll("input").forEach(el => {
 
-/* ── TOGGLE ── */
-.toggle-g{display:flex;gap:4px;background:var(--s2);border-radius:var(--r3);padding:3px;margin-bottom:13px;border:1px solid var(--bd)}
-.tgl-btn{flex:1;padding:8px;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;transition:all .18s;white-space:nowrap}
-.tgl-btn.on{background:#fff;color:var(--ac);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+    if (el.type !== "file" && el.id !== "ocr-apikey-input") el.value = "";
 
-/* ── GENDER ── */
-.gender-row{display:flex;gap:8px;margin-bottom:13px}
-.g-btn{flex:1;padding:11px;border:1.5px solid var(--bd);background:var(--s2);border-radius:var(--r2);font-family:inherit;font-size:14px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:7px}
-.g-btn.on{border-color:var(--ac);background:var(--ac-s);color:var(--ac)}
-.g-btn:active{transform:scale(.97)}
+  });
 
-/* ── PRESETS ── */
-.preset-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:13px}
-.preset-row::-webkit-scrollbar{display:none}
-.chip{flex-shrink:0;padding:7px 13px;background:var(--s);border:1.5px solid var(--bd);border-radius:100px;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .15s;white-space:nowrap}
-.chip.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 8px rgba(79,70,229,.3)}
-.chip:active{transform:scale(.95)}
+  $("sex").value = "M";
 
-/* ── RESULT CARD ── */
-.res-card{border-radius:var(--r);overflow:hidden;box-shadow:var(--sh2);border:1.5px solid var(--bd);animation:slideUp .4s cubic-bezier(.34,1.4,.64,1) forwards}
-@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
-.res-hdr{padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.res-hdr-l{display:flex;align-items:center;gap:10px}
-.res-hdr-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-s
+  $("add-custom-btn").style.display = "none";
+
+  $("drug-container").innerHTML = emptyDrugHTML();
+
+  currentProtocolArray = [];
+
+  isCustomMode = false;
+
+  calculateBiometrics();
+
+  $("wt").focus();
+
+}
+
+document.addEventListener("keydown", e => {
+
+  if (e.key !== "Enter") return;
+
+  const tag = e.target.tagName;
+
+  if (tag === "TEXTAREA") return;
+
+  e.preventDefault();
+
+  if (tag === "BUTTON") {
+
+    e.target.click();
+
+    return;
+
+  }
+
+  const inputs = Array.from(document.querySelectorAll(".nav-input:not([disabled])"));
+
+  const idx = inputs.indexOf(e.target);
+
+  if (idx === -1) return;
+
+  if (e.target.id === "plt") $("protocol-select").focus();
+
+  else if (e.target.id === "protocol-select") setTimeout(() => $("rx-0")?.focus(), 80);
+
+  else if (e.target.id?.startsWith("rx-")) {
+
+    const allRx = Array.from(document.querySelectorAll('[id^="rx-"]'));
+
+    const rxIdx = allRx.indexOf(e.target);
+
+    if (rxIdx < allRx.length - 1) allRx[rxIdx + 1].focus();
+
+    else e.target.blur();
+
+  } else if (idx < inputs.length - 1) inputs[idx + 1].focus();
+
+  else e.target.blur();
+
+});
+
+function mkBadge(label, val, pass, empty) {
+
+  if (empty) return `<span class="lab-badge lab-empty">– ${label}</span>`;
+
+  const cls = pass ? "lab-badge lab-pass" : "lab-badge lab-fail";
+
+  const icon = pass ? "✓" : "🚨";
+
+  return `<span class="${cls}">${icon} ${label}: ${val}</span>`;
+
+}
+
+function calculateBiometrics() {
+
+  const ht = parseFloat($("ht").value);
+
+  const wt = parseFloat($("wt").value);
+
+  const age = parseFloat($("age").value);
+
+  const sex = $("sex").value;
+
+  const scr = parseFloat($("scr").value);
+
+  const wbc = parseFloat($("wbc").value);
+
+  const neut = parseFloat($("neut").value);
+
+  const hb = parseFloat($("hb").value);
+
+  const pltInput = parseFloat($("plt").value);
+
+  const plt = pltInput * 1000;
+
+  state.wt = isNaN(wt) ? 0 : wt;
+
+  if (!isNaN(ht) && !isNaN(wt) && ht > 0 && wt > 0) {
+
+    state.bsa = Math.sqrt((ht * wt) / 3600);
+
+    $("out-bsa").innerText = state.bsa.toFixed(2);
+
+  } else {
+
+    state.bsa = 0;
+
+    $("out-bsa").innerText = "--";
+
+  }
+
+  if (!isNaN(ht) && !isNaN(wt) && !isNaN(age) && !isNaN(scr) && ht > 0 && wt > 0 && age > 0 && scr > 0) {
+
+    const bmi = wt / Math.pow(ht / 100, 2);
+
+    const ibw = sex === "M" ? 50 + 2.3 * ((ht / 2.54) - 60) : 45.5 + 2.3 * ((ht / 2.54) - 60);
+
+    let weightForCrCl = wt;
+
+    let note = "mL/min";
+
+    if (bmi > 30) {
+
+      weightForCrCl = ibw + 0.4 * (wt - ibw);
+
+      note = `Adj ${weightForCrCl.toFixed(0)}kg`;
+
+    }
+
+    let crcl = ((140 - age) * weightForCrCl) / (72 * scr);
+
+    if (sex === "F") crcl *= 0.85;
+
+    state.crcl = Math.min(crcl, 125);
+
+    $("out-crcl").innerText = state.crcl.toFixed(1);
+
+    $("crcl-note-mini").innerText = note;
+
+  } else {
+
+    state.crcl = 0;
+
+    $("out-crcl").innerText = "--";
+
+    $("crcl-note-mini").innerText = "mL/min";
+
+  }
+
+  let anyFail = false;
+
+  let ancBadge, wbcBadge, hbBadge, pltBadge;
+
+  const failList = [];
+
+  if (!isNaN(wbc) && !isNaN(neut)) {
+
+    const anc = Math.round(wbc * (neut / 100));
+
+    const pass = anc >= 1500;
+
+    if (!pass) { anyFail = true; failList.push(`ANC ${anc.toLocaleString()}`); }
+
+    ancBadge = mkBadge("ANC", anc.toLocaleString(), pass, false);
+
+  } else ancBadge = mkBadge("ANC", "", true, true);
+
+  if (!isNaN(wbc)) {
+
+    const pass = wbc >= 3000;
+
+    if (!pass) { anyFail = true; failList.push(`WBC ${wbc.toLocaleString()}`); }
+
+    wbcBadge = mkBadge("WBC", wbc.toLocaleString(), pass, false);
+
+  } else wbcBadge = mkBadge("WBC", "", true, true);
+
+  if (!isNaN(hb)) {
+
+    const pass = hb >= 12;
+
+    if (!pass) { anyFail = true; failList.push(`Hb ${hb}`); }
+
+    hbBadge = mkBadge("Hb", hb, pass, false);
+
+  } else hbBadge = mkBadge("Hb", "", true, true);
+
+  if (!isNaN(plt)) {
+
+    const pass = plt >= 100000;
+
+    if (!pass) { anyFail = true; failList.push(`Plt ${pltInput.toFixed(0)}K`); }
+
+    pltBadge = mkBadge("Plt", `${pltInput.toFixed(0)}K`, pass, false);
+
+  } else pltBadge = mkBadge("Plt", "", true, true);
+
+  $("safety-badges").innerHTML = `
+
+    <div style="display:flex;gap:8px;">${ancBadge}${wbcBadge}</div>
+
+    <div style="display:flex;gap:8px;">${hbBadge}${pltBadge}</div>
+
+  `;
+
+  const banner = $("safety-banner");
+
+  const hasAnyLab = !isNaN(wbc) || !isNaN(hb) || !isNaN(plt);
+
+  if (hasAnyLab && anyFail) {
+
+    banner.style.display = "";
+
+    banner.style.background = "#fef2f2";
+
+    banner.style.borderColor = "#fca5a5";
+
+    banner.innerHTML = `<div style="font-size:13px;font-weight:900;color:#991b1b;margin-bottom:7px;">🚨 ค่า Lab ต่ำกว่าเกณฑ์ — ควรปรึกษาแพทย์</div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">${failList.map(f => `<span class="chip chip-red">${esc(f)}</span>`).join("")}</div>`;
+
+  } else if (hasAnyLab) {
+
+    banner.style.display = "";
+
+    banner.style.background = "#f0fdf4";
+
+    banner.style.borderColor = "#86efac";
+
+    banner.innerHTML = `<span style="font-size:13px;font-weight:900;color:#15803d;">✓ ค่า Lab ทุกตัวอยู่ในเกณฑ์ปลอดภัย</span>`;
+
+  } else {
+
+    banner.style.display = "none";
+
+  }
+
+  updateAllCards();
+
+}
+
+$("protocol-select").addEventListener("input", e => {
+
+  const key = e.target.value;
+
+  const addBtn = $("add-custom-btn");
+
+  if (key === "CUSTOM" || db[key]) {
+
+    isCustomMode = key === "CUSTOM";
+
+    currentProtocolArray = JSON.parse(JSON.stringify(db[key]));
+
+    addBtn.style.display = isCustomMode ? "" : "none";
+
+    if (isCustomMode && currentProtocolArray.length === 0) addCustomDrug();
+
+    else renderCards();
+
+  } else if (!key) {
+
+    addBtn.style.display = "none";
+
+    currentProtocolArray = [];
+
+    $("drug-container").innerHTML = emptyDrugHTML();
+
+  }
+
+});
+
+function renderCards() {
+
+  if (!currentProtocolArray.length) {
+
+    $("drug-container").innerHTML = `<div class="empty-state">ไม่มีรายการยาในสูตรนี้</div>`;
+
+    return;
+
+  }
+
+  const bases = ["BSA", "AUC", "Weight", "Fixed"];
+
+  let html = `<div class="drug-list">`;
+
+  currentProtocolArray.forEach((drug, i) => {
+
+    const basisOpts = bases.map(b => `<option value="${b}" ${drug.basis === b ? "selected" : ""}>${b}</option>`).join("");
+
+    const volDisplay = drug.defaultVol === null || drug.defaultVol === undefined || drug.defaultVol === 0 ? "" : drug.defaultVol;
+
+    html += `
+
+      <div class="drug-row" id="row-${i}">
+
+        <div>
+
+          <input type="text" id="name-${i}" class="inp drug-name-input" value="${esc(drug.name)}" placeholder="ชื่อยา">
+
+          <div class="small-row" style="margin-top:8px;">
+
+            <span class="small-label">Target</span>
+
+            <input type="number" id="target-${i}" step="0.1" class="inp" style="width:78px;text-align:center;" value="${esc(drug.target)}" inputmode="decimal">
+
+            <select id="basis-${i}" class="inp" style="width:96px;">${basisOpts}</select>
+
+            <select id="dred-${i}" class="inp" style="width:108px;" title="ลด Dose (%)">
+
+              <option value="100">ปกติ</option>
+
+              <option value="90">ลด 10%</option>
+
+              <option value="85">ลด 15%</option>
+
+              <option value="80">ลด 20%</option>
+
+              <option value="75">ลด 25%</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="calc-box">
+
+          <div><span class="calc-dose" id="rec-${i}">0.0</span> <span class="unit">mg</span></div>
+
+          <div id="cap-note-${i}" style="display:none;"></div>
+
+          <div id="renal-warn-${i}" style="display:none;" class="chip chip-red">⚠ ปรับตามค่าไต</div>
+
+        </div>
+
+        <div>
+
+          <input type="text" id="diluent-${i}" class="inp" placeholder="สารละลายและเวลาให้ยา" value="${esc(drug.diluentText)}">
+
+          <div class="small-row" style="margin-top:8px;">
+
+            <span class="small-label">Vol</span>
+
+            <input type="number" id="vol-${i}" class="inp" style="width:92px;text-align:center;" value="${esc(volDisplay)}" placeholder="ml" inputmode="decimal">
+
+            <div class="conc-box">
+
+              <span class="small-label">Conc</span>
+
+              <span id="conc-${i}">--</span>
+
+              <span style="font-size:10px;font-weight:800;color:#98a2b3;">mg/ml</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;">
+
+          <input type="number" step="0.1" id="rx-${i}" class="inp nav-input" style="font-size:24px;font-weight:900;text-align:center;min-height:66px;" placeholder="Rx" inputmode="decimal">
+
+          <div id="var-${i}" class="var-badge var-empty"><span style="font-size:12px;">รอข้อมูล</span></div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  html += `</div><div style="margin-top:14px;display:flex;justify-content:flex-end;"><button onclick="resetApp()" class="btn btn-rose no-print">↻ เริ่มใหม่ทั้งหมด</button></div>`;
+
+  $("drug-container").innerHTML = html;
+
+  currentProtocolArray.forEach((_, i) => {
+
+    ["target", "basis", "rx", "name", "vol", "diluent", "dred"].forEach(prefix => {
+
+      const el = $(`${prefix}-${i}`);
+
+      if (el) el.addEventListener("input", () => updateSingleCard(i));
+
+    });
+
+    updateSingleCard(i);
+
+  });
+
+}
+
+function updateAllCards() {
+
+  currentProtocolArray.forEach((_, i) => updateSingleCard(i));
+
+}
+
+function updateSingleCard(i) {
+
+  const nameEl = $(`name-${i}`);
+
+  const targetEl = $(`target-${i}`);
+
+  const basisEl = $(`basis-${i}`);
+
+  const rxEl = $(`rx-${i}`);
+
+  const volEl = $(`vol-${i}`);
+
+  const dredEl = $(`dred-${i}`);
+
+  const recEl = $(`rec-${i}`);
+
+  const capNote = $(`cap-note-${i}`);
+
+  const renalWarnEl = $(`renal-warn-${i}`);
+
+  const concEl = $(`conc-${i}`);
+
+  const varDiv = $(`var-${i}`);
+
+  const row = $(`row-${i}`);
+
+  if (!targetEl) return;
+
+  const name = (nameEl.value || "").toLowerCase();
+
+  const target = parseFloat(targetEl.value);
+
+  const basis = basisEl.value;
+
+  const rx = parseFloat(rxEl.value);
+
+  const vol = parseFloat(volEl.value);
+
+  const dredPct = parseFloat(dredEl.value) || 100;
+
+  let recDose = 0;
+
+  let validRec = false;
+
+  if (!isNaN(target)) {
+
+    if (basis === "BSA" && state.bsa > 0) { recDose = target * state.bsa; validRec = true; }
+
+    else if (basis === "AUC" && state.crcl > 0) { recDose = target * (state.crcl + 25); validRec = true; }
+
+    else if (basis === "Weight" && state.wt > 0) { recDose = target * state.wt; validRec = true; }
+
+    else if (basis === "Fixed") { recDose = target; validRec = true; }
+
+  }
+
+  if (validRec && dredPct !== 100) recDose *= (dredPct / 100);
+
+  const renalDrugs = ["cisplatin", "methotrexate", "mtx", "pemetrexed", "etoposide", "ifosfamide"];
+
+  renalWarnEl.style.display = validRec && renalDrugs.some(d => name.includes(d)) ? "" : "none";
+
+  capNote.style.display = "none";
+
+  capNote.className = "";
+
+  capNote.innerText = "";
+
+  if (validRec && name.includes("vinblastine") && recDose > 10) {
+
+    recDose = 10;
+
+    capNote.style.display = "";
+
+    capNote.className = "chip chip-amber";
+
+    capNote.innerText = "MAX 10 mg";
+
+  } else if (validRec && name.includes("vincristine") && recDose > 2) {
+
+    recDose = 2;
+
+    capNote.style.display = "";
+
+    capNote.className = "chip chip-amber";
+
+    capNote.innerText = "MAX 2 mg";
+
+  } else if (validRec && name.includes("zoledronic")) {
+
+    if (state.crcl > 60) recDose = 4.0;
+
+    else if (state.crcl >= 50) { recDose = 3.5; capNote.style.display = ""; capNote.className = "chip chip-blue"; capNote.innerText = `Adj CrCl ${state.crcl.toFixed(0)}`; }
+
+    else if (state.crcl >= 40) { recDose = 3.3; capNote.style.display = ""; capNote.className = "chip chip-blue"; capNote.innerText = `Adj CrCl ${state.crcl.toFixed(0)}`; }
+
+    else if (state.crcl >= 30) { recDose = 3.0; capNote.style.display = ""; capNote.className = "chip chip-blue"; capNote.innerText = `Adj CrCl ${state.crcl.toFixed(0)}`; }
+
+    else { recDose = 0; capNote.style.display = ""; capNote.className = "chip chip-red"; capNote.innerText = "CrCl<30: ห้ามใช้"; }
+
+  }
+
+  recEl.innerText = validRec ? recDose.toFixed(1) : "0.0";
+
+  recEl.style.color = dredPct !== 100 && validRec ? "#d97706" : "";
+
+  const doseForConc = (!isNaN(rx) && rx > 0) ? rx : recDose;
+
+  if (!isNaN(vol) && vol > 0 && doseForConc > 0) {
+
+    const conc = doseForConc / vol;
+
+    concEl.innerText = conc.toFixed(2);
+
+    let alertBadge = $(`conc-alert-${i}`);
+
+    if (name.includes("etoposide") && conc > 0.4) {
+
+      if (!alertBadge) {
+
+        alertBadge = document.createElement("div");
+
+        alertBadge.id = `conc-alert-${i}`;
+
+        alertBadge.className = "chip chip-red";
+
+        alertBadge.style.marginTop = "6px";
+
+        concEl.closest(".small-row").after(alertBadge);
+
+      }
+
+      alertBadge.innerHTML = "🚨 Etoposide Conc &gt;0.4";
+
+      alertBadge.style.display = "";
+
+    } else if (alertBadge) alertBadge.style.display = "none";
+
+  } else {
+
+    concEl.innerText = "--";
+
+    const alertBadge = $(`conc-alert-${i}`);
+
+    if (alertBadge) alertBadge.style.display = "none";
+
+  }
+
+  if (!isNaN(rx) && rx > 0 && validRec && recDose > 0) {
+
+    const diff = ((rx - recDose) / recDose) * 100;
+
+    const absDiff = Math.abs(diff);
+
+    const diffTxt = diff > 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
+
+    if (absDiff <= 5) {
+
+      varDiv.innerHTML = `<span style="font-size:16px;">${diffTxt}</span><span style="font-size:11px;">✓ ปลอดภัย</span>`;
+
+      varDiv.className = "var-badge var-safe";
+
+      row.style.borderColor = "#86efac";
+
+    } else if (absDiff <= 10) {
+
+      varDiv.innerHTML = `<span style="font-size:16px;">${diffTxt}</span><span style="font-size:11px;">⚠ ตรวจสอบ</span>`;
+
+      varDiv.className = "var-badge var-warn";
+
+      row.style.borderColor = "#fcd34d";
+
+    } else {
+
+      varDiv.innerHTML = `<span style="font-size:16px;">${diffTxt}</span><span style="font-size:11px;">🚨 อันตราย</span>`;
+
+      varDiv.className = "var-badge var-danger";
+
+      row.style.borderColor = "#fca5a5";
+
+    }
+
+  } else {
+
+    varDiv.innerHTML = `<span style="font-size:12px;">รอข้อมูล</span>`;
+
+    varDiv.className = "var-badge var-empty";
+
+    row.style.borderColor = "#e8edf5";
+
+  }
+
+}
+
+function printSummary() {
+
+  const protocol = $("protocol-select").value || "ไม่ระบุ";
+
+  const bsa = $("out-bsa").innerText;
+
+  const crcl = $("out-crcl").innerText;
+
+  const wt = $("wt").value || "-";
+
+  const ht = $("ht").value || "-";
+
+  const age = $("age").value || "-";
+
+  const sex = $("sex").value === "M" ? "ชาย" : "หญิง";
+
+  let drugRows = "";
+
+  currentProtocolArray.forEach((_, i) => {
+
+    const name = $(`name-${i}`)?.value || "-";
+
+    const rec = $(`rec-${i}`)?.innerText || "-";
+
+    const rx = $(`rx-${i}`)?.value || "-";
+
+    const diluent = $(`diluent-${i}`)?.value || "-";
+
+    const conc = $(`conc-${i}`)?.innerText || "-";
+
+    const dred = $(`dred-${i}`)?.value || "100";
+
+    const varTxt = $(`var-${i}`)?.innerText.replace("\\n", " ") || "-";
+
+    drugRows += `<tr><td>${esc(name)}</td><td>${esc(rec)} mg${dred !== "100" ? ` (${dred}%)` : ""}</td><td>${esc(rx)} mg</td><td>${esc(diluent)}</td><td>${esc(conc)} mg/ml</td><td>${esc(varTxt)}</td></tr>`;
+
+  });
+
+  const win = window.open("", "_blank");
+
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>OncoChex Summary</title>
+
+  <style>
+
+    body{font-family:Prompt,Arial,sans-serif;padding:24px;color:#172033;font-size:13px}
+
+    h1{color:#4f46e5;margin:0 0 6px;font-size:22px}
+
+    .meta{color:#667085;margin-bottom:16px}
+
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+
+    .box{border:1px solid #e4e7ec;background:#f8fafc;border-radius:10px;padding:10px}
+
+    .box b{font-size:20px;color:#4f46e5}
+
+    table{width:100%;border-collapse:collapse}
+
+    th{background:#4f46e5;color:white;text-align:left;padding:8px}
+
+    td{border-bottom:1px solid #e4e7ec;padding:8px}
+
+    tr:nth-child(even) td{background:#f8fafc}
+
+    .footer{margin-top:18px;color:#98a2b3;font-size:10px;border-top:1px solid #e4e7ec;padding-top:10px}
+
+  </style></head><body>
+
+    <h1>🧬 OncoChex — สรุปการคำนวณยา</h1>
+
+    <div class="meta">พิมพ์เมื่อ: ${new Date().toLocaleString("th-TH")} | สูตรยา: <b>${esc(protocol)}</b></div>
+
+    <div class="grid">
+
+      <div class="box">น้ำหนัก<br><b>${esc(wt)}</b> kg</div>
+
+      <div class="box">ส่วนสูง<br><b>${esc(ht)}</b> cm</div>
+
+      <div class="box">BSA<br><b>${esc(bsa)}</b> m²</div>
+
+      <div class="box">CrCl<br><b>${esc(crcl)}</b> mL/min</div>
+
+    </div>
+
+    <table><thead><tr><th>ยา</th><th>Calc</th><th>Rx</th><th>วิธีให้</th><th>Conc</th><th>Variance</th></tr></thead><tbody>${drugRows}</tbody></table>
+
+    <div class="footer">OncoChex Clinical Pharmacy Engine | ${esc(age)} ปี ${esc(sex)} | ใช้เพื่อตรวจสอบเท่านั้น</div>
+
+    <script>window.onload=()=>window.print()<\/script>
+
+  </body></html>`);
+
+  win.document.close();
+
+}
+
+function openOCRPicker() {
+
+  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+
+    openOCR();
+
+  }
+
+  $("ocr-file-input").click();
+
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  const saved = localStorage.getItem("onco_apikey");
+
+  if (saved) {
+
+    $("ocr-apikey-input").value = saved;
+
+    $("ocr-key-status").innerHTML = "✅ API Key บันทึกไว้แล้ว พร้อมใช้งาน";
+
+    $("ocr-key-status").style.color = "#15803d";
+
+  }
+
+});
+
+function saveAPIKey() {
+
+  const key = $("ocr-apikey-input").value.trim();
+
+  if (!key.startsWith("sk-ant")) {
+
+    $("ocr-key-status").innerHTML = "❌ Key ไม่ถูกต้อง ต้องขึ้นต้นด้วย sk-ant...";
+
+    $("ocr-key-status").style.color = "#dc2626";
+
+    return;
+
+  }
+
+  localStorage.setItem("onco_apikey", key);
+
+  $("ocr-key-status").innerHTML = "✅ บันทึกแล้ว พร้อมใช้งาน";
+
+  $("ocr-key-status").style.color = "#15803d";
+
+}
+
+function getAPIKey() {
+
+  return $("ocr-apikey-input").value.trim() || localStorage.getItem("onco_apikey") || "";
+
+}
+
+function openOCR() {
+
+  $("ocr-modal").style.display = "flex";
+
+  const saved = localStorage.getItem("onco_apikey");
+
+  if (saved) {
+
+    $("ocr-apikey-input").value = saved;
+
+    $("ocr-key-status").innerHTML = "✅ API Key บันทึกไว้แล้ว พร้อมใช้งาน";
+
+    $("ocr-key-status").style.color = "#15803d";
+
+  }
+
+}
+
+function closeOCR() {
+
+  $("ocr-modal").style.display = "none";
+
+  ocrParsed = null;
+
+  ["ocr-status", "ocr-preview", "ocr-result"].forEach(id => $(id).style.display = "none");
+
+  $("ocr-apply-btn").style.display = "none";
+
+  $("ocr-dropzone").style.display = "";
+
+}
+
+function handleOCRFile(e) {
+
+  const file = e.target.files[0];
+
+  if (file) {
+
+    openOCR();
+
+    processOCRFile(file);
+
+  }
+
+  e.target.value = "";
+
+}
+
+function setStatus(msg, type = "info") {
+
+  const el = $("ocr-status");
+
+  const styles = {
+
+    info: ["#f0f9ff", "#7dd3fc", "#0369a1"],
+
+    success: ["#f0fdf4", "#86efac", "#15803d"],
+
+    warn: ["#fffbeb", "#fcd34d", "#92400e"],
+
+    error: ["#fef2f2", "#fca5a5", "#991b1b"]
+
+  };
+
+  const s = styles[type] || styles.info;
+
+  el.style.display = "";
+
+  el.style.background = s[0];
+
+  el.style.borderColor = s[1];
+
+  el.style.color = s[2];
+
+  el.innerHTML = msg;
+
+}
+
+async function processOCRFile(file) {
+
+  const apiKey = getAPIKey();
+
+  if (!apiKey) {
+
+    setStatus("❌ กรุณากรอก API Key ก่อน", "error");
+
+    return;
+
+  }
+
+  const dataUrl = await new Promise(resolve => {
+
+    const r = new FileReader();
+
+    r.onload = e => resolve(e.target.result);
+
+    r.readAsDataURL(file);
+
+  });
+
+  const base64 = dataUrl.split(",")[1];
+
+  const mediaType = file.type || "image/jpeg";
+
+  $("ocr-img").src = dataUrl;
+
+  $("ocr-preview").style.display = "";
+
+  $("ocr-dropzone").style.display = "none";
+
+  setStatus("🔍 Claude กำลังอ่านใบ Order...", "info");
+
+  try {
+
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+
+      method: "POST",
+
+      headers: {
+
+        "Content-Type": "application/json",
+
+        "x-api-key": apiKey,
+
+        "anthropic-version": "2023-06-01",
+
+        "anthropic-dangerous-direct-browser-access": "true"
+
+      },
+
+      body: JSON.stringify({
+
+        model: "claude-sonnet-4-6",
+
+        max_tokens: 1000,
+
+        messages: [{
+
+          role: "user",
+
+          content: [
+
+            { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+
+            { type: "text", text: `อ่านใบ Chemotherapy Order นี้ แล้วตอบเป็น JSON เท่านั้น:
+
+{
+
+  "wt": <น้ำหนัก kg ตัวเลขเท่านั้น หรือ null>,
+
+  "ht": <ส่วนสูง cm ตัวเลขเท่านั้น หรือ null>,
+
+  "bsa": <BSA m² ตัวเลขเท่านั้น หรือ null>,
+
+  "wbc": <WBC ตัวเลขเท่านั้น หรือ null>,
+
+  "anc": <ANC ตัวเลขเท่านั้น หรือ null>,
+
+  "hb": <Hb ตัวเลขเท่านั้น หรือ null>,
+
+  "plt": <Platelets ตัวเลข x1000 เช่น ถ้าเห็น 253000 ให้ใส่ 253 หรือ null>,
+
+  "scr": <Creatinine ตัวเลขเท่านั้น หรือ null>,
+
+  "neut_pct": <Neutrophil % ตัวเลขเท่านั้น หรือ null>,
+
+  "protocol": <ชื่อสูตรยา หรือ null>,
+
+  "drugs": [{ "name": <ชื่อยา>, "dose_mg": <ขนาดยา mg ตัวเลขเท่านั้น หรือ null>, "diluent": <วิธีให้ยา หรือ null> }]
+
+}
+
+ข้อมูลที่ไม่แน่ใจให้ใส่ null` }
+
+          ]
+
+        }]
+
+      })
+
+    });
+
+    if (!resp.ok) {
+
+      let msg = `HTTP ${resp.status}`;
+
+      try {
+
+        const err = await resp.json();
+
+        msg = err.error?.message || msg;
+
+      } catch {}
+
+      throw new Error(msg);
+
+    }
+
+    const data = await resp.json();
+
+    const text = data.content?.map(c => c.text || "").join("") || "";
+
+    const match = text.match(/\{[\s\S]*\}/);
+
+    if (!match) throw new Error("ไม่พบ JSON ในผลลัพธ์");
+
+    ocrParsed = JSON.parse(match[0]);
+
+    showOCRPreview(ocrParsed);
+
+  } catch (err) {
+
+    setStatus(`❌ ${esc(err.message)}`, "error");
+
+  }
+
+}
+
+function showOCRPreview(d) {
+
+  const fields = [d.wt, d.ht, d.bsa, d.wbc, d.hb, d.plt, d.scr, d.protocol, ...(d.drugs || []).map(x => x.dose_mg)]
+
+    .filter(v => v !== null && v !== undefined);
+
+  if (!fields.length) {
+
+    setStatus("⚠️ อ่านได้แต่ไม่พบข้อมูลที่ชัดเจน", "warn");
+
+    return;
+
+  }
+
+  setStatus("✅ อ่านสำเร็จ — ตรวจสอบก่อนกดใช้ข้อมูล", "success");
+
+  const row = (icon, label, val, unit = "") => `
+
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9;">
+
+      <span>${icon}</span><span style="font-size:12px;font-weight:800;color:#667085;min-width:86px;">${label}</span>
+
+      <span style="font-size:14px;font-weight:900;color:#172033;">${esc(val)} <span style="font-size:11px;color:#98a2b3;">${unit}</span></span>
+
+    </div>`;
+
+  let html = `<div style="background:#f8fafc;border:1px solid #e4e7ec;border-radius:16px;padding:14px;"><div style="font-size:13px;font-weight:900;color:#344054;margin-bottom:8px;">📋 ข้อมูลที่อ่านได้</div>`;
+
+  if (d.protocol) html += row("🧬", "Protocol", d.protocol);
+
+  if (d.wt) html += row("⚖️", "น้ำหนัก", d.wt, "kg");
+
+  if (d.ht) html += row("📏", "ส่วนสูง", d.ht, "cm");
+
+  if (d.bsa) html += row("📐", "BSA", d.bsa, "m²");
+
+  if (d.scr) html += row("🔬", "SCr", d.scr, "mg/dL");
+
+  if (d.wbc) html += row("🩸", "WBC", d.wbc);
+
+  if (d.anc) html += row("🛡️", "ANC", d.anc);
+
+  if (d.hb) html += row("💉", "Hb", d.hb, "g/dL");
+
+  if (d.plt) html += row("🟣", "Plt", d.plt, "×10³");
+
+  if (d.neut_pct) html += row("🔵", "Neut", d.neut_pct, "%");
+
+  if (d.drugs?.length) {
+
+    html += `<div style="font-size:12px;font-weight:900;color:#344054;margin:12px 0 8px;">💊 รายการยา</div>`;
+
+    d.drugs.forEach(drug => {
+
+      html += `<div style="background:white;border:1.5px solid #e0e7ff;border-radius:12px;padding:9px 10px;margin-bottom:7px;">
+
+        <div style="font-weight:900;color:#172033;font-size:14px;">${esc(drug.name || "-")}
+
+        ${drug.dose_mg !== null && drug.dose_mg !== undefined ? `<span style="background:#eef2ff;color:#4f46e5;font-weight:900;padding:2px 8px;border-radius:8px;margin-left:6px;">${esc(drug.dose_mg)} mg</span>` : ""}</div>
+
+        ${drug.diluent ? `<div style="color:#667085;font-size:11px;margin-top:4px;font-weight:700;">${esc(drug.diluent)}</div>` : ""}
+
+      </div>`;
+
+    });
+
+  }
+
+  html += `</div>`;
+
+  $("ocr-result").innerHTML = html;
+
+  $("ocr-result").style.display = "";
+
+  $("ocr-apply-btn").style.display = "";
+
+}
+
+function applyOCRResult() {
+
+  if (!ocrParsed) return;
+
+  const d = ocrParsed;
+
+  if (d.wt) $("wt").value = d.wt;
+
+  if (d.ht) $("ht").value = d.ht;
+
+  if (d.scr) $("scr").value = d.scr;
+
+  if (d.wbc) $("wbc").value = d.wbc;
+
+  if (d.hb) $("hb").value = d.hb;
+
+  if (d.plt) $("plt").value = d.plt;
+
+  if (d.neut_pct) $("neut").value = d.neut_pct;
+
+  if (d.protocol) {
+
+    const keys = Object.keys(db).filter(k => k !== "CUSTOM");
+
+    const ocrProto = d.protocol.toLowerCase().replace(/[\s\-\/]/g, "");
+
+    let bestKey = null;
+
+    let bestScore = 0;
+
+    keys.forEach(key => {
+
+      const norm = key.toLowerCase().replace(/[\s\-\/]/g, "");
+
+      if (norm.includes(ocrProto) || ocrProto.includes(norm)) {
+
+        const score = Math.min(norm.length, ocrProto.length);
+
+        if (score > bestScore) { bestScore = score; bestKey = key; }
+
+      }
+
+    });
+
+    if (bestKey) {
+
+      $("protocol-select").value = bestKey;
+
+      $("protocol-select").dispatchEvent(new Event("input"));
+
+      setTimeout(() => fillRxDoses(d.drugs), 120);
+
+    } else fillRxDoses(d.drugs);
+
+  } else fillRxDoses(d.drugs);
+
+  calculateBiometrics();
+
+  closeOCR();
+
+  ["wt", "ht", "scr", "wbc", "hb", "plt", "neut"].forEach(id => {
+
+    const el = $(id);
+
+    if (el?.value) {
+
+      el.style.borderColor = "#4ade80";
+
+      el.style.background = "#f0fdf4";
+
+      setTimeout(() => { el.style.borderColor = ""; el.style.background = ""; }, 1800);
+
+    }
+
+  });
+
+}
+
+function fillRxDoses(drugs) {
+
+  if (!drugs?.length) return;
+
+  drugs.forEach(drug => {
+
+    if (drug.dose_mg === null || drug.dose_mg === undefined) return;
+
+    currentProtocolArray.forEach((_, i) => {
+
+      const nameEl = $(`name-${i}`);
+
+      if (!nameEl) return;
+
+      const rowName = nameEl.value.toLowerCase();
+
+      const ocrName = (drug.name || "").toLowerCase();
+
+      const words = ocrName.split(/[\s\(\)\-]+/).filter(w => w.length > 3);
+
+      if (words.some(w => rowName.includes(w))) {
+
+        const rxEl = $(`rx-${i}`);
+
+        if (rxEl) {
+
+          rxEl.value = drug.dose_mg;
+
+          updateSingleCard(i);
+
+        }
+
+      }
+
+    });
+
+  });
+
+}
+
+document.querySelectorAll("#ht,#wt,#age,#sex,#scr,#wbc,#neut,#hb,#plt").forEach(el => {
+
+  el.addEventListener("input", calculateBiometrics);
+
+});
+
+calculateBiometrics();
+
+</script>
+
+</body>
+
+</html>'''
+
+path = Path("/mnt/data/onco_chex_ios_ipados_friendly.html")
+
+path.write_text(html, encoding="utf-8")
+
+path.as_posix()
