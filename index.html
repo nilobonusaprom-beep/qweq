@@ -1,127 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BC Cancer - Drug Order Assessment</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
-        h1, h2, h3 { color: #2c3e50; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .step-section { border-bottom: 2px solid #ecf0f1; padding-bottom: 20px; margin-bottom: 20px; }
-        .step-title { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; color: #34495e; }
-        label { display: block; margin-bottom: 8px; cursor: pointer; }
-        input[type="text"], input[type="number"], input[type="date"] { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); }
-        .calculator-box { background: #e8f4f8; padding: 15px; border-radius: 6px; margin-top: 10px; }
-        button { background-color: #3498db; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; font-size: 1em; }
-        button:hover { background-color: #2980b9; }
-        .result { font-weight: bold; color: #c0392b; margin-top: 10px; font-size: 1.1em; }
-        .note { font-size: 0.9em; color: #7f8c8d; }
-    </style>
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>OncoRx – รพ.สกลนคร</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --bg:#f0f3f9;
+  --s:#fff;
+  --s2:#f8fafc;
+  --s3:#f1f5f9;
+  --bd:#e2e8f0;
+  --bd2:#cbd5e1;
+  --tx:#0f172a;
+  --tx2:#475569;
+  --tx3:#94a3b8;
+  --ac:#4f46e5;
+  --ac2:#6366f1;
+  --ac-s:#eef2ff;
+  --ac-b:#c7d2fe;
+  --gr:#059669;
+  --gr-s:#ecfdf5;
+  --gr-b:#a7f3d0;
+  --rd:#dc2626;
+  --rd-s:#fef2f2;
+  --rd-b:#fecaca;
+  --am:#d97706;
+  --am-s:#fffbeb;
+  --am-b:#fde68a;
+  --tl:#0d9488;
+  --tl-s:#f0fdfa;
+  --tl-b:#99f6e4;
+  --or:#ea580c;
+  --or-s:#fff7ed;
+  --or-b:#fed7aa;
+  --r:18px;
+  --r2:12px;
+  --r3:8px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);
+  --sh2:0 4px 24px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.05);
+  --sh3:0 8px 40px rgba(0,0,0,.13),0 2px 8px rgba(0,0,0,.06);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'Prompt',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--tx);min-height:100svh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-<div class="container">
-    <h1>Cancer Drug Order Assessment Screening</h1>
-    <p class="note">Based on the BC Cancer Clinical Pharmacy Guide</p>
+/* ── HEADER ── */
+.hdr{
+  background:linear-gradient(150deg,#1e1b4b 0%,#312e81 45%,#1d4ed8 100%);
+  padding:max(56px,env(safe-area-inset-top,0px)+20px) 20px 32px;
+  position:relative;overflow:hidden;
+}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 80% at 50% -30%,rgba(99,102,241,.5),transparent)}
+.hdr::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:48px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%)}
+.hdr-in{position:relative;z-index:1;max-width:580px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.hdr-ico{width:52px;height:52px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.hdr-ico i{font-size:22px;color:#a5b4fc}
+.hdr-title h1{color:#fff;font-size:20px;font-weight:800;letter-spacing:-.3px;line-height:1.2}
+.hdr-title h1 span{color:#a5b4fc}
+.hdr-title p{color:#a5b4fc;font-size:11px;font-weight:400;margin-top:3px}
+.hdr-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(165,180,252,.15);border:1px solid rgba(165,180,252,.25);border-radius:100px;padding:4px 10px;margin-top:8px;font-size:10px;color:#c7d2fe;font-weight:500}
 
-    <div class="step-section">
-        <div class="step-title">Step 1: Verify Patient Identity</div>
-        <label>Patient Name: <input type="text" placeholder="Enter full name"></label>
-        <label>ID Numbers (MRN/PHN): <input type="text" placeholder="Enter ID"></label>
-        <label>Date of Birth: <input type="date"></label>
-        <label><input type="checkbox"> Confirmed 2+ positive identifiers.</label>
-    </div>
+/* ── MAIN ── */
+.main{max-width:580px;margin:0 auto;padding:20px 14px calc(48px + var(--safe-b))}
 
-    <div class="step-section">
-        <div class="step-title">Steps 2-4: Clinical Checks & Timing</div>
-        <label><input type="checkbox"> Protocol matches clinical indication and eligibility criteria.</label>
-        <label><input type="checkbox"> Medications reviewed (no contraindicating drug interactions/CAMs).</label>
-        <label><input type="checkbox"> Checked for other therapies (e.g., concurrent radiation).</label>
-        <label><input type="checkbox"> Checked allergies (e.g., latex).</label>
-        <label><input type="checkbox"> Childbearing potential assessed and documented (ages 11-56).</label>
-        <label><input type="checkbox"> Verified duration of therapy and cycle interval.</label>
-    </div>
+/* ── TABS ── */
+.tabs{display:flex;gap:5px;background:var(--s);border-radius:var(--r);padding:4px;box-shadow:var(--sh);margin-bottom:18px}
+.tab{flex:1;padding:10px 6px;border:none;background:transparent;cursor:pointer;border-radius:var(--r2);font-family:inherit;font-size:11.5px;font-weight:700;color:var(--tx3);transition:all .22s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;letter-spacing:.2px}
+.tab i{font-size:12px}
+.tab.on{background:var(--ac);color:#fff;box-shadow:0 2px 10px rgba(79,70,229,.35)}
 
-    <div class="step-section">
-        <div class="step-title">Step 5: Determine Body Surface Area (BSA)</div>
-        <p class="note">Uses Mosteller Formula (Actual Body Weight)</p>
-        <div class="calculator-box">
-            <label>Height (cm): <input type="number" id="height" placeholder="e.g., 170"></label>
-            <label>Weight (kg): <input type="number" id="weight" placeholder="e.g., 70"></label>
-            <button onclick="calculateBSA()">Calculate BSA</button>
-            <div class="result" id="bsa-result">BSA: -- m²</div>
-        </div>
-    </div>
+/* ── PANEL ── */
+.panel{display:none;animation:fadeIn .25s ease}
+.panel.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-    <div class="step-section">
-        <div class="step-title">Step 6: Check Dose Appropriateness</div>
-        <label><input type="checkbox"> Maximum cumulative doses checked (e.g., bleomycin/anthracyclines).</label>
-        <label><input type="checkbox"> Biosimilar drug selection verified (if applicable).</label>
-        
-        <div class="calculator-box">
-            <p style="margin-top:0;"><strong>Dose Variance Checker</strong></p>
-            <label>Prescribed Dose: <input type="number" id="prescribed-dose"></label>
-            <label>Calculated Ideal Dose: <input type="number" id="calculated-dose"></label>
-            <button onclick="calculateVariance()">Check Variance</button>
-            <div class="result" id="variance-result">Variance: -- %</div>
-            <p class="note">Max allowed variance is 5% (or 10% for select monoclonal antibodies).</p>
-        </div>
-    </div>
+/* ── CARD ── */
+.card{background:var(--s);border-radius:var(--r);padding:18px;box-shadow:var(--sh);margin-bottom:12px;border:1px solid var(--bd)}
+.card-ttl{font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:.9px;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.card-ttl i{color:var(--ac);font-size:13px}
+.card-ttl::after{content:'';flex:1;height:1px;background:var(--bd)}
 
-    <div class="step-section">
-        <div class="step-title">Step 7: Review Laboratory Values</div>
-        <label><input type="checkbox"> Baseline labs within 4 weeks (for Cycle 1).</label>
-        <label><input type="checkbox"> Subsequent labs fall within guidelines (< 3 week cycles = 24h, >= 3 week cycles = 96h).</label>
-        <label><input type="checkbox"> Screened for organ dysfunction/need for dose modification.</label>
-    </div>
+/* ── LABEL ── */
+.lbl{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--tx2);margin-bottom:7px}
+.lbl-ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
 
-    <div class="step-section">
-        <div class="step-title">Steps 8-11: Delivery, Toxicity & Supportive Care</div>
-        <label><input type="checkbox"> Verified appropriate method of drug delivery (Oral/Parenteral/SC).</label>
-        <label><input type="checkbox"> Patient assessed for potential cancer drug toxicities.</label>
-        <label><input type="checkbox"> Protocol-related supportive care ordered (e.g., antinauseants).</label>
-        <label><input type="checkbox"> Patient appropriately counseled and provided handouts.</label>
-    </div>
+/* ── INPUTS ── */
+.inp{width:100%;padding:13px 42px 13px 14px;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:inherit;font-size:15px;font-weight:500;color:var(--tx);outline:none;transition:border-color .2s,box-shadow .2s,background .2s;-webkit-appearance:none;appearance:none}
+.inp:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:#fff}
+.inp::placeholder{color:var(--tx3);font-weight:400}
+.inp-wrap{position:relative}
+.inp-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:14px;pointer-events:none;transition:color .2s}
+.inp:focus~.inp-ico{color:var(--ac)}
+.clr-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:17px;cursor:pointer;background:none;border:none;display:none;transition:color .2s;padding:2px}
+.clr-btn:hover{color:var(--rd)}
 
-    <button style="width: 100%; font-size: 1.2em; padding: 15px; background-color: #27ae60;" onclick="alert('Order Screening Complete!')">Submit Screening Assessment</button>
+.sel{width:100%;padding:13px 42px 13px 14px;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r2);font-family:inherit;font-size:15px;font-weight:500;color:var(--tx);outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .2s,box-shadow .2s}
+.sel:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.1);background-color:#fff}
 
-</div>
+/* Dropdown */
+.ddown{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--s);border:1.5px solid var(--bd);border-radius:var(--r2);max-height:230px;overflow-y:auto;box-shadow:var(--sh3);z-index:200;display:none}
+.ddown::-webkit-scrollbar{width:4px}
+.ddown::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+.dopt{padding:12px 14px;font-size:14px;font-weight:500;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--s3);transition:background .12s;display:flex;align-items:center;justify-content:space-between}
+.dopt:last-child{border:none}
+.dopt:hover,.dopt.on{background:var(--ac-s);color:var(--ac)}
+.dopt.on{font-weight:700}
+.dopt-empty{padding:16px;text-align:center;font-size:13px;color:var(--tx3)}
 
-<script>
-    function calculateBSA() {
-        const height = parseFloat(document.getElementById('height').value);
-        const weight = parseFloat(document.getElementById('weight').value);
-        const resultDiv = document.getElementById('bsa-result');
-        
-        if (height > 0 && weight > 0) {
-            const bsa = Math.sqrt((height * weight) / 3600);
-            resultDiv.innerText = `BSA: ${bsa.toFixed(2)} m²`;
-        } else {
-            resultDiv.innerText = "Please enter valid height and weight.";
-        }
-    }
+/* ── NUM INPUT ── */
+.num-w{display:flex;align-items:center;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r2);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.num-w:focus-within{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,70,229,.1);background:#fff}
+.num{flex:1;padding:13px 12px;background:transparent;border:none;font-family:inherit;font-size:19px;font-weight:700;color:var(--tx);outline:none;-webkit-appearance:none;appearance:none;min-width:0}
+.num::placeholder{color:var(--tx3);font-size:15px;font-weight:400}
+.num-unit{padding:0 14px;font-size:12px;font-weight:700;color:var(--tx3);border-left:1px solid var(--bd);white-space:nowrap;align-self:stretch;display:flex;align-items:center}
 
-    function calculateVariance() {
-        const prescribed = parseFloat(document.getElementById('prescribed-dose').value);
-        const calculated = parseFloat(document.getElementById('calculated-dose').value);
-        const resultDiv = document.getElementById('variance-result');
+/* Stepper */
+.steps{display:flex;gap:5px;margin-top:7px}
+.step{flex:1;padding:8px;background:var(--s2);border:1.5px solid var(--bd);border-radius:var(--r3);font-family:inherit;font-size:12px;font-weight:700;color:var(--tx2);cursor:pointer;transition:all .15s;text-align:center;-webkit-appearance:none}
+.step:active{background:var(--ac-s);border-color:var(--ac);color:var(--ac);transform:scale(.94)}
 
-        if (prescribed > 0 && calculated > 0) {
-            const variance = Math.abs((prescribed - calculated) / calculated) * 100;
-            resultDiv.innerText = `Variance: ${variance.toFixed(2)}%`;
-            if (variance > 5) {
-                resultDiv.style.color = "#c0392b"; // Red if over 5%
-                resultDiv.innerText += " (Warning: Exceeds 5% variance)";
-            } else {
-                resultDiv.style.color = "#27ae60"; // Green if under 5%
-            }
-        } else {
-            resultDiv.innerText = "Please enter valid dose amounts.";
-        }
-    }
-</script>
+/* ── TOGGLE ── */
+.toggle-g{display:flex;gap:4px;background:var(--s2);border-radius:var(--r3);padding:3px;margin-bottom:13px;border:1px solid var(--bd)}
+.tgl-btn{flex:1;padding:8px;border:none;background:transparent;border-radius:6px;font-family:inherit;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;transition:all .18s;white-space:nowrap}
+.tgl-btn.on{background:#fff;color:var(--ac);box-shadow:0 1px 4px rgba(0,0,0,.1)}
 
-</body>
-</html>
+/* ── GENDER ── */
+.gender-row{display:flex;gap:8px;margin-bottom:13px}
+.g-btn{flex:1;padding:11px;border:1.5px solid var(--bd);background:var(--s2);border-radius:var(--r2);font-family:inherit;font-size:14px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:7px}
+.g-btn.on{border-color:var(--ac);background:var(--ac-s);color:var(--ac)}
+.g-btn:active{transform:scale(.97)}
+
+/* ── PRESETS ── */
+.preset-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:13px}
+.preset-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:7px 13px;background:var(--s);border:1.5px solid var(--bd);border-radius:100px;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.chip.on{background:var(--ac);color:#fff;border-color:var(--ac);box-shadow:0 2px 8px rgba(79,70,229,.3)}
+.chip:active{transform:scale(.95)}
+
+/* ── RESULT CARD ── */
+.res-card{border-radius:var(--r);overflow:hidden;box-shadow:var(--sh2);border:1.5px solid var(--bd);animation:slideUp .4s cubic-bezier(.34,1.4,.64,1) forwards}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.res-hdr{padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.res-hdr-l{display:flex;align-items:center;gap:10px}
+.res-hdr-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-s
