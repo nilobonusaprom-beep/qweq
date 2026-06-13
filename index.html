@@ -1,52 +1,257 @@
-from pathlib import Path
-
-path = Path("/mnt/data/onco_chex_ios_ipados_friendly.html")
-html = path.read_text(encoding="utf-8")
-
-# Fix JS split strings: current file has JS split("\\n") / split("\\t") which means literal backslash+n/t in JS.
-html = html.replace('tsvData.split("\\\\n").forEach(line => {', 'tsvData.split("\\n").forEach(line => {')
-html = html.replace('line.split("\\\\t")', 'line.split("\\t")')
-
-# Make file picker iOS-friendly: do not open modal before file input click.
-html = html.replace('accept="image/*" capture="environment"', 'accept="image/*"')
-html = html.replace(
-'''function openOCRPicker() {
-  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    openOCR();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemo CPOE — Oncology Order System</title>
+<style>
+  :root {
+    --navy:   #0B1E3D;
+    --teal:   #0E7C86;
+    --teal-lt:#E6F4F5;
+    --amber:  #D97706;
+    --red:    #B91C1C;
+    --red-lt: #FEF2F2;
+    --green:  #166534;
+    --green-lt:#F0FDF4;
+    --slate:  #334155;
+    --mist:   #F1F5F9;
+    --border: #CBD5E1;
+    --white:  #FFFFFF;
+    --ink:    #1E293B;
+    --mono:   'SF Mono', 'Fira Code', monospace;
   }
-  $("ocr-file-input").click();
-}''',
-'''function openOCRPicker() {
-  const input = $("ocr-file-input");
-  input.value = "";
-  input.click();
-}'''
-)
 
-# Improve drag/drop? not necessary, add separate camera/gallery hint
-html = html.replace('📷 สแกน Order</button>', '📷 เลือกรูป Order</button>')
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-# Add a fallback visible file input inside modal for iOS if needed
-html = html.replace(
-'''<div id="ocr-dropzone" class="dropzone" onclick="document.getElementById('ocr-file-input').click()">
-        <div style="font-size:36px;margin-bottom:8px;">🖼️</div>
-        <div>แตะเพื่อเลือกรูป / ถ่ายรูป order</div>
-        <div style="font-size:12px;color:#98a2b3;margin-top:4px;">รองรับ JPG, PNG</div>
-      </div>''',
-'''<div id="ocr-dropzone" class="dropzone" onclick="openOCRPicker()">
-        <div style="font-size:36px;margin-bottom:8px;">🖼️</div>
-        <div>แตะเพื่อเลือกรูป Order</div>
-        <div style="font-size:12px;color:#98a2b3;margin-top:4px;">เลือกรูปจาก Photos หรือ Files · JPG, PNG</div>
-      </div>'''
-)
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--mist);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+  }
 
-# Ensure modal apply close resets dropzone, and choose button opens picker
-# Add quick self-check comment/version
-html = html.replace(
-'<title>OncoChex — Clinical Verifier</title>',
-'<title>OncoChex — Clinical Verifier</title>\n  <!-- iOS/iPadOS friendly fixed build: protocol parser + photo picker -->'
-)
+  /* ── TOP BAR ── */
+  header {
+    background: var(--navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; letter-spacing: -.3px; }
+  .logo-icon { width: 28px; height: 28px; background: var(--teal); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .header-right { display: flex; align-items: center; gap: 16px; font-size: 13px; color: #94A3B8; }
+  .status-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; display: inline-block; margin-right: 5px; }
 
-fixed_path = Path("/mnt/data/onco_chex_ios_ipados_friendly_FIXED.html")
-fixed_path.write_text(html, encoding="utf-8")
-fixed_path.as_posix()
+  /* ── STEP NAV ── */
+  .step-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .step-nav::-webkit-scrollbar { display: none; }
+  .step-btn {
+    flex: none;
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    display: flex; align-items: center; gap: 7px;
+    white-space: nowrap;
+    transition: color .15s, border-color .15s;
+  }
+  .step-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+  .step-btn .num {
+    width: 20px; height: 20px; border-radius: 50%; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--border); color: var(--slate);
+  }
+  .step-btn.active .num { background: var(--teal); color: #fff; }
+  .step-btn.done .num { background: var(--green); color: #fff; }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* ── PANELS ── */
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .panel-head {
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-body { padding: 20px; }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+  @media(max-width:700px) {
+    .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ── FORM ELEMENTS ── */
+  label { display: block; font-size: 12px; font-weight: 600; color: #64748B;
+    text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+  input, select, textarea {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 14px; color: var(--ink);
+    background: var(--white); outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,124,134,.12); }
+  input.err { border-color: var(--red); }
+  input[readonly] { background: var(--mist); color: var(--slate); cursor: default; }
+  .field { position: relative; }
+  .unit {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; color: #94A3B8; pointer-events: none;
+  }
+  .field input { padding-right: 40px; }
+
+  /* ── COMPUTED VALUE BOX ── */
+  .computed {
+    background: var(--teal-lt); border: 1.5px solid var(--teal);
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 22px; font-weight: 800; color: var(--teal);
+    text-align: center; line-height: 1.2;
+  }
+  .computed small { display: block; font-size: 11px; font-weight: 600;
+    color: #0E7C86; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 2px; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 22px; border-radius: 8px; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer; transition: opacity .15s, transform .1s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--teal); color: #fff; }
+  .btn-navy    { background: var(--navy); color: #fff; }
+  .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--slate); }
+  .btn-red     { background: var(--red); color: #fff; }
+  .btn-green   { background: var(--green); color: #fff; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  /* ── ALERTS ── */
+  .alert {
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+    border: 1.5px solid;
+  }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert-body { flex: 1; }
+  .alert-title { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+  .alert-msg { font-size: 13px; line-height: 1.5; }
+  .alert.critical { background: var(--red-lt); border-color: #FCA5A5; color: var(--red); }
+  .alert.warning  { background: #FFFBEB; border-color: #FCD34D; color: #92400E; }
+  .alert.ok       { background: var(--green-lt); border-color: #86EFAC; color: var(--green); }
+  .alert.info     { background: var(--teal-lt); border-color: #67E8F9; color: #0E7490; }
+
+  /* ── PROTOCOL CARD ── */
+  .proto-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; }
+  @media(max-width:600px) { .proto-cards { grid-template-columns: 1fr; } }
+  .proto-card {
+    border: 2px solid var(--border); border-radius: 10px; padding: 16px;
+    cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .proto-card:hover { border-color: var(--teal); background: var(--teal-lt); }
+  .proto-card.selected { border-color: var(--teal); background: var(--teal-lt); }
+  .proto-card h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .proto-card p  { font-size: 12px; color: #64748B; line-height: 1.5; }
+  .proto-badge {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; margin-top: 8px;
+    background: var(--navy); color: #fff;
+  }
+
+  /* ── ORDER PREVIEW TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .4px; color: #64748B; padding: 8px 10px;
+    border-bottom: 2px solid var(--border); }
+  td { padding: 10px 10px; border-bottom: 1px solid #F1F5F9; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .td-seq { color: #94A3B8; font-size: 12px; }
+  .drug-name { font-weight: 700; color: var(--navy); }
+  .dose-val { font-family: var(--mono); font-size: 14px; color: var(--teal); font-weight: 700; }
+
+  /* ── PRINT LAYOUT ── */
+  #print-order { display: none; }
+
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    header, .step-nav, main > *:not(#print-wrapper) { display: none !important; }
+    #print-wrapper { display: block !important; }
+    #print-order { display: block; }
+    .no-print { display: none !important; }
+    .print-page {
+      width: 210mm; min-height: 297mm;
+      padding: 14mm 16mm;
+      font-family: Arial, sans-serif;
+      font-size: 11pt;
+      color: #000;
+    }
+    .print-header { border: 2px solid #000; padding: 8px 12px; margin-bottom: 10px; }
+    .print-title { font-size: 16pt; font-weight: bold; }
+    .print-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 10px; }
+    .print-box { border: 1px solid #000; padding: 8px; }
+    .print-section-title { font-weight: bold; text-decoration: underline; margin-bottom: 5px; font-size: 11pt; }
+    .print-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 10.5pt; }
+    .print-line { border-top: 1px solid #000; margin: 5px 0; }
+    .print-alert-box { border: 2px solid #000; background: #fffbe6; padding: 8px; margin-bottom: 10px; }
+    .sig-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .sig-box { border-top: 1px solid #000; padding-top: 6px; font-size: 10pt; }
+    .print-ordered-list { padding-left: 18px; }
+    .print-ordered-list li { margin-bottom: 4px; }
+    .print-monitoring { font-size: 10pt; }
+  }
+
+  /* ── VERIFY SECTION ── */
+  .verify-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid #F1F5F9;
+  }
+  .verify-row:last-child { border-bottom: none; }
+  .verify-check { width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
+    accent-color: var(--teal); flex-shrink: 0; }
+  .verify-label { font-size: 14px; flex: 1; }
+  .verify-note { font-size: 12px; color: #64748B; }
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 2px 9px; border-radius: 20px;
+  }
+  .badge-red   { background: #FEE2E2; color: var(--red); }
+  .badge-green { background: #DCFCE7; color: var(--green); }
+  .badge-amber { background: #FEF3C7;
